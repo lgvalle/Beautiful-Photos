@@ -1,0 +1,36 @@
+###############
+### Android ###
+###############
+*.apk
+*.ap_
+# lint folder
+lint
+ 
+# files for the dex VM
+*.dex
+ 
+# Java class files
+*.class
+
+# generated files
+**/bin/
+**/gen/
+**/classes/
+**/gen-external-apklibs/
+**/mirror/
+
+# Local configuration file (sdk path, etc)
+local.properties
+
+# gradle directory
+.gradle/
+**/gradlew
+**/gradlew.bat
+**/gradle/
+**/build/
+
+# intellij
+.idea/
+*.iml
+# DataBase
+*.db
