@@ -35,4 +35,7 @@ dependencies {
 
 	// Picasso
 	compile 'com.squareup.picasso:picasso:2.2.+'
+
+	// Okhttp
+	compile 'com.squareup.okhttp:okhttp:1.5.+'
 }
