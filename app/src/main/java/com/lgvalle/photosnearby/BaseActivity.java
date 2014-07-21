@@ -1,10 +1,10 @@
 package com.lgvalle.photosnearby;
 
-import android.app.ActionBar;
 import android.graphics.Typeface;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentActivity;
+import android.support.v7.app.ActionBar;
+import android.support.v7.app.ActionBarActivity;
 import android.widget.TextView;
 
 /**
@@ -13,7 +13,7 @@ import android.widget.TextView;
  * Provides an initialization template and hooks for child activities.
  * Provides common utility methods
  */
-public abstract class BaseActivity extends FragmentActivity{
+public abstract class BaseActivity extends ActionBarActivity{
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -26,14 +26,7 @@ public abstract class BaseActivity extends FragmentActivity{
 
 	}
 
-	/**
-	 * Set custom font on a textview array
-	 */
-	protected void setFont(Typeface font, TextView... views) {
-		for(TextView v : views) {
-			v.setTypeface(font);
-		}
-	}
+
 
 	protected void addFragment(int fragmentContainer, Fragment fragment) {
 		getSupportFragmentManager().beginTransaction().add(fragmentContainer, fragment).commit();
@@ -48,7 +41,7 @@ public abstract class BaseActivity extends FragmentActivity{
 	 * Init Action Bar with app title. Can be extended
 	 */
 	protected void initActionBar() {
-		ActionBar actionBar = getActionBar();
+		ActionBar actionBar = getSupportActionBar();
 		actionBar.setTitle("app name");
 	}
 

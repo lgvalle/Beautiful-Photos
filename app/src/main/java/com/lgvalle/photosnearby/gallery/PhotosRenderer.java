@@ -17,10 +17,8 @@ import com.squareup.picasso.Picasso;
  * Created by lgvalle on 21/07/14.
  */
 public class PhotosRenderer extends Renderer<Photo500Px> {
-
 	@InjectView(R.id.photo_title)
 	TextView tvPhotoTitle;
-
 	@InjectView(R.id.photo)
 	ImageView ivPhoto;
 
@@ -32,8 +30,9 @@ public class PhotosRenderer extends Renderer<Photo500Px> {
 		super(quest, inflater, parent);
 		this.rootView = inflater.inflate(R.layout.row_photo, parent, false);
 		this.rootView.setTag(this);
-
 		ButterKnife.inject(this, rootView);
+
+		//FontsHelper.setFont(FontsHelper.robotoCondensedRegular, tvPhotoTitle);
 	}
 
 	@Override

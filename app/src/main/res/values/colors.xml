@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+
+
+	<!-- Action Bar colors -->
+	<color name="actionbar_background">@color/pink_500</color>
+	<color name="actionbar_title_text_color_light">@color/pink_100</color>
+
+</resources>
