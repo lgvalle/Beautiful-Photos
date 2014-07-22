@@ -26,4 +26,17 @@
 		<item name="android:textStyle">italic</item>
 	</style>
 
+	<style name="PhotoThumbnail">
+		<item name="android:layout_margin">2dp</item>
+		<item name="android:scaleType">centerCrop</item>
+		<item name="android:adjustViewBounds">true</item>
+	</style>
+
+	<style name="EmptyTextMessage">
+		<item name="android:textSize">30dp</item>
+		<item name="android:textStyle">italic</item>
+		<item name="android:textColor">@color/pink_200</item>
+		<item name="android:gravity">center_horizontal|center_vertical</item>
+	</style>
+
 </resources>

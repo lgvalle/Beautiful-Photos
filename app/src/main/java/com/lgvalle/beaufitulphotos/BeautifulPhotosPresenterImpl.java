@@ -1,13 +1,17 @@
 package com.lgvalle.beaufitulphotos;
 
 import android.util.Log;
-import com.lgvalle.beaufitulphotos.event.PhotosAvailableEvent;
+import com.lgvalle.beaufitulphotos.events.GalleryRefreshingEvent;
+import com.lgvalle.beaufitulphotos.events.GalleryRequestingMoreEvent;
+import com.lgvalle.beaufitulphotos.events.PhotosAvailableEvent;
 import com.lgvalle.beaufitulphotos.fivehundredpxs.ApiService500px;
-import com.lgvalle.beaufitulphotos.fivehundredpxs.PhotosResponse;
+import com.lgvalle.beaufitulphotos.fivehundredpxs.model.PhotosResponse;
+import com.lgvalle.beaufitulphotos.interfaces.BeautifulPhotosPresenter;
+import com.lgvalle.beaufitulphotos.interfaces.BeautifulPhotosScreen;
 import com.lgvalle.beaufitulphotos.interfaces.PhotoModel;
-import com.lgvalle.beaufitulphotos.interfaces.PopularPhotosPresenter;
-import com.lgvalle.beaufitulphotos.util.BusHelper;
+import com.lgvalle.beaufitulphotos.utils.BusHelper;
 import com.squareup.otto.Produce;
+import com.squareup.otto.Subscribe;
 import retrofit.Callback;
 import retrofit.RetrofitError;
 import retrofit.client.Response;
@@ -16,42 +20,123 @@ import java.util.List;
 
 /**
  * Created by lgvalle on 21/07/14.
+ * <p/>
+ * Responsible for all business layer of it's UI {@link com.lgvalle.beaufitulphotos.interfaces.BeautifulPhotosScreen}
+ * <p/>
+ * This class main functionality is to query photo service and post results into app bus.
+ * It also produce photo events in the bus when a someone new subscribes.
+ * <p/>
+ * It is subscribed to two bus events:
+ * <li>{@link com.lgvalle.beaufitulphotos.events.GalleryRefreshingEvent} produced when the gallery needs to completely refresh it's content</li>
+ * <li>{@link com.lgvalle.beaufitulphotos.events.GalleryRequestingMoreEvent} produce when gallery needs more items</li>
+ * <p/>
+ * In both cases queries photo service and dispatch results into app bus.
  */
-public class BeautifulPhotosPresenterImpl implements PopularPhotosPresenter {
+public class BeautifulPhotosPresenterImpl implements BeautifulPhotosPresenter {
 	private static final String TAG = BeautifulPhotosPresenterImpl.class.getSimpleName();
-	private final BeautifulPhotosActivity screen;
+	/* UI layer interface */
+	private final BeautifulPhotosScreen screen;
+	/* Network service interface */
 	private final ApiService500px service;
+	/* Memory cached photo-model list */
 	private List<? extends PhotoModel> photos;
+	/* Service currentPage. Increments after successful operation */
+	private int currentPage;
+	private int totalPages;
 
-	public BeautifulPhotosPresenterImpl(BeautifulPhotosActivity beautifulPhotosActivity, ApiService500px service) {
-		this.screen = beautifulPhotosActivity;
+	/**
+	 * Create presenter and set its dependencies
+	 *
+	 * @param screen  UI Layer interface
+	 * @param service Network service interface
+	 */
+	public BeautifulPhotosPresenterImpl(BeautifulPhotosScreen screen, ApiService500px service) {
+		this.screen = screen;
 		this.service = service;
+		resetPage();
 	}
 
+	/**
+	 * Request photos to service.
+	 * Save result to produce photo event to new subscribed listeners but also post immediately after fetching.
+	 * Increments currentPage number after successful fetch.
+	 * If failure, calls ui layer to display an error message.
+	 */
 	@Override
 	public void needPhotos() {
-		service.getPhotosPopular(new Callback<PhotosResponse>() {
-			@Override
-			public void success(PhotosResponse data, Response response) {
-				Log.d(TAG, "[PhotosNearbyPresenterImpl - success] - (line 34): " + "");
-				photos = data.getPhotos();
-				BusHelper.post(producePhotosAvailableEvent());
+		if (currentPage == totalPages) {
+			// No more available pages. Exit
+			return;
+		}
+		service.getPhotosPopular(
+				ApiService500px.FEATURE_POPULAR,
+				ApiService500px.SIZE_SMALL,
+				ApiService500px.SIZE_BIG, currentPage,
+				new Callback<PhotosResponse>() {
+					@Override
+					public void failure(RetrofitError error) {
+						Log.e(TAG, "[PhotosNearbyPresenterImpl - failure] - (line 40): " + "", error);
+						screen.showError(R.string.service_error);
+					}
 
-			}
+					@Override
+					public void success(PhotosResponse data, Response response) {
+						// Save photos info and post on bus
+						photos = data.getPhotos();
+						BusHelper.post(producePhotosAvailableEvent());
 
-			@Override
-			public void failure(RetrofitError error) {
-				Log.e(TAG, "[PhotosNearbyPresenterImpl - failure] - (line 40): " + "", error);
-				//@author - lgvalle @date - 21/07/14 @time - 20:30
-				//FIXME: [PhotosNearbyPresenterImpl - failure] - error handle
-			}
-		});
-
+						// Update totalPages and currentPage info
+						totalPages = data.getTotalPages();
+						currentPage = data.getCurrentPage() + 1;
+					}
+				}
+		);
 	}
 
+	/**
+	 * Refresh whole gallery.
+	 * Reset currentPage counter first
+	 *
+	 * @param event Event object is empty for this event
+	 */
+	@Subscribe
+	public void onGalleryRefreshingEvent(GalleryRefreshingEvent event) {
+		Log.d(TAG, "[BeautifulPhotosPresenterImpl - onGalleryRefreshingEvent] - (line 82): " + "");
+		resetPage();
+		needPhotos();
+	}
+
+	/**
+	 * Request next currentPage of items
+	 *
+	 * @param event Event object is empty for this event
+	 */
+	@Subscribe
+	public void onGalleryRequestingMoreEvent(GalleryRequestingMoreEvent event) {
+		Log.d(TAG, "[BeautifulPhotosPresenterImpl - onGalleryRequestingMoreEvent] - (line 92): " + "");
+		needPhotos();
+	}
+
+	/**
+	 * Send last fetched photos to new subscribed listeners
+	 */
 	@Produce
 	public PhotosAvailableEvent producePhotosAvailableEvent() {
-		Log.d(TAG, "[PhotosNearbyPresenterImpl - producePhotosAvailableEvent] - (line 54): " + "");
 		return new PhotosAvailableEvent(photos);
+	}
+
+	/**
+	 * Increments currentPage number
+	 */
+	private void nextPage() {
+		currentPage++;
+	}
+
+	/**
+	 * Reset currentPage number to first one in current service
+	 */
+	private void resetPage() {
+		currentPage = ApiService500px.FIRST_PAGE;
+		totalPages = Integer.MAX_VALUE;
 	}
 }

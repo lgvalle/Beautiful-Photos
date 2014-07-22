@@ -1,0 +1,28 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+	xmlns:tools="http://schemas.android.com/tools"
+	android:layout_width="match_parent"
+	android:layout_height="match_parent"
+
+	tools:context=".MainActivity">
+
+	<FrameLayout
+		android:id="@+id/main_content"
+		android:layout_width="300dp"
+		android:layout_height="match_parent" />
+
+	<FrameLayout
+		android:id="@+id/frame_details_content"
+		android:layout_width="match_parent"
+		android:layout_height="match_parent"
+		android:layout_toRightOf="@+id/main_content"
+		android:background="@color/pink_400">
+
+		<TextView
+			style="@style/EmptyTextMessage"
+			android:layout_width="match_parent"
+			android:layout_height="match_parent"
+			android:text="@string/empty_frame_message" />
+
+	</FrameLayout>
+
+</RelativeLayout>

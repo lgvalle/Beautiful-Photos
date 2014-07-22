@@ -13,6 +13,5 @@ public interface PhotoModel extends Serializable {
 	String getSmallUrl();
 	String getLargeUrl();
 	String getTitle();
-	String getDescription();
 	String getAuthorName();
 }
