@@ -37,9 +37,6 @@ dependencies {
 	// Picasso
 	compile 'com.squareup.picasso:picasso:2.2.+'
 
-	// OkHttp
-	compile 'com.squareup.okhttp:okhttp:2.0.0'
-
 	// Grid
 	compile 'com.etsy.android.grid:library:1.0.+'
 }

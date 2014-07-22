@@ -28,12 +28,15 @@ import java.util.List;
  * When a new event is received, all photos are added to the adapter.
  */
 public class GalleryFragment extends BaseFragment implements SwipeRefreshLayout.OnRefreshListener {
-	@InjectView(R.id.grid_view)
-	StaggeredGridView list;
-	@InjectView(R.id.swipe_container)
-	SwipeRefreshLayout swipeLayout;
 	private RendererAdapter<PhotoModel> adapter;
 	private List<PhotoModel> photos;
+
+	/* Grid column number is defined in integer.xml, so it depends on screen size */
+	@InjectView(R.id.grid_view)
+	StaggeredGridView grid;
+	@InjectView(R.id.swipe_container)
+	SwipeRefreshLayout swipeLayout;
+
 
 	@Override
 	public void onResume() {
@@ -106,6 +109,6 @@ public class GalleryFragment extends BaseFragment implements SwipeRefreshLayout.
 		// Gallery adapter
 		GalleryItemRenderer renderer = new GalleryItemRenderer();
 		adapter = new RendererAdapter<PhotoModel>(LayoutInflater.from(getActivity()), renderer, getActivity());
-		list.setAdapter(adapter);
+		grid.setAdapter(adapter);
 	}
 }

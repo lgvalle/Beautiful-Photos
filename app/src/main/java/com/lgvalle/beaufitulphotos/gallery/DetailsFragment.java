@@ -23,13 +23,14 @@ import com.squareup.picasso.Target;
  */
 public class DetailsFragment extends BaseFragment {
 	private static final String EXTRA_PHOTO = "extra_photo";
+	private PhotoModel photo;
+
 	@InjectView(R.id.photo)
 	ImageView ivPhoto;
 	@InjectView(R.id.photo_title)
 	TextView tvPhotoTitle;
 	@InjectView(R.id.photo_author)
 	TextView tvPhotoAuthor;
-	private PhotoModel photo;
 
 	@Override
 	public void onResume() {

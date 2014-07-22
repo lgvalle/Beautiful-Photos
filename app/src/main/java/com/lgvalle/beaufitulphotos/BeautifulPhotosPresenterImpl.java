@@ -75,8 +75,10 @@ public class BeautifulPhotosPresenterImpl implements BeautifulPhotosPresenter {
 				new Callback<PhotosResponse>() {
 					@Override
 					public void failure(RetrofitError error) {
-						Log.e(TAG, "[PhotosNearbyPresenterImpl - failure] - (line 40): " + "", error);
+						// Display error message
 						screen.showError(R.string.service_error);
+						// Produce event with previous cached results
+						BusHelper.post(producePhotosAvailableEvent());
 					}
 
 					@Override
