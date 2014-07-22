@@ -17,4 +17,13 @@
 		<item name="android:textColor">@color/actionbar_title_text_color_light</item>
 	</style>
 
+	<style name="PhotoCaption">
+		<item name="android:textColor">@color/amber_500</item>
+		<item name="android:textSize">20dp</item>
+	</style>
+
+	<style name="PhotoCaption.Italic" parent="@style/PhotoCaption">
+		<item name="android:textStyle">italic</item>
+	</style>
+
 </resources>
