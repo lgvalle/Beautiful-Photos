@@ -1,9 +1,11 @@
 package com.lgvalle.beaufitulphotos;
 
-import android.view.MenuItem;
+import android.view.Menu;
+import android.view.MenuInflater;
 import android.widget.Toast;
 import com.lgvalle.beaufitulphotos.events.GalleryItemChosenEvent;
 import com.lgvalle.beaufitulphotos.fivehundredpxs.ApiModule500px;
+import com.lgvalle.beaufitulphotos.fivehundredpxs.model.Feature;
 import com.lgvalle.beaufitulphotos.gallery.DetailsFragment;
 import com.lgvalle.beaufitulphotos.gallery.GalleryFragment;
 import com.lgvalle.beaufitulphotos.interfaces.BeautifulPhotosPresenter;
@@ -26,6 +28,9 @@ import com.squareup.otto.Subscribe;
 public class BeautifulPhotosScreenImpl extends BaseActivity implements BeautifulPhotosScreen {
 	/* Manage all business logic for this activity */
 	private BeautifulPhotosPresenter presenter;
+	/* Flag to control toggle between popular and highest rated feeds */
+	private boolean popular;
+
 
 	@Override
 	protected void onResume() {
@@ -63,17 +68,6 @@ public class BeautifulPhotosScreenImpl extends BaseActivity implements Beautiful
 	}
 
 	@Override
-	public boolean onOptionsItemSelected(MenuItem item) {
-		switch (item.getItemId()) {
-			case android.R.id.home:
-				// Pop fragments back stack to navigate backwards
-				getSupportFragmentManager().popBackStack();
-				return true;
-		}
-		return super.onOptionsItemSelected(item);
-	}
-
-	@Override
 	public void showError(int errorID) {
 		Toast.makeText(this, getString(errorID), Toast.LENGTH_SHORT).show();
 	}
@@ -101,6 +95,13 @@ public class BeautifulPhotosScreenImpl extends BaseActivity implements Beautiful
 		// Init activity presenter with all it's dependencies
 		presenter = new BeautifulPhotosPresenterImpl(this, ApiModule500px.getService());
 		// Request data (photos) to activity presenter. Answer will be post on bus, so no need to callbacks here
-		presenter.needPhotos();
+		presenter.needPhotos(Feature.HighestRated.getParam());
+	}
+
+	@Override
+	public boolean onCreateOptionsMenu(Menu menu) {
+		MenuInflater inflater = getMenuInflater();
+		inflater.inflate(R.menu.main_menu, menu);
+		return true;
 	}
 }

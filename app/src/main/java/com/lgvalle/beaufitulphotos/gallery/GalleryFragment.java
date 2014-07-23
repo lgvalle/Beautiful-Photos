@@ -75,7 +75,6 @@ public class GalleryFragment extends BaseFragment implements SwipeRefreshLayout.
 			photos.addAll((List<PhotoModel>) event.getPhotos());
 			// Adapter refresh itself
 			adapter.addElements(photos);
-
 			// Stop refreshing animation
 			swipeLayout.setRefreshing(false);
 		}
@@ -83,13 +82,11 @@ public class GalleryFragment extends BaseFragment implements SwipeRefreshLayout.
 
 	/**
 	 * Callback when user swipes down to refresh.
-	 * Post event in bus asking for refresh and clear data.
+	 * Post event in bus asking for refresh.
 	 */
 	@Override
 	public void onRefresh() {
 		BusHelper.post(new GalleryRefreshingEvent());
-		adapter.clear();
-		photos.clear();
 	}
 
 	@Override
@@ -112,5 +109,16 @@ public class GalleryFragment extends BaseFragment implements SwipeRefreshLayout.
 		GalleryItemRenderer renderer = new GalleryItemRenderer();
 		adapter = new RendererAdapter<PhotoModel>(LayoutInflater.from(getActivity()), renderer, getActivity());
 		grid.setAdapter(adapter);
+	}
+
+	/**
+	 * Listen to gallery refreshing event.
+	 * Event could be triggered from this class or from main activity. That's why it's better to just listen the bus
+	 */
+	@Subscribe
+	public void onGalleryRefreshingEvent(GalleryRefreshingEvent event) {
+		adapter.clear();
+		photos.clear();
+		swipeLayout.setRefreshing(true);
 	}
 }

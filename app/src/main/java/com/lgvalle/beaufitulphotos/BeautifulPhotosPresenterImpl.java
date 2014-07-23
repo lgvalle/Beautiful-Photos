@@ -43,6 +43,7 @@ public class BeautifulPhotosPresenterImpl implements BeautifulPhotosPresenter {
 	/* Service currentPage. Increments after successful operation */
 	private int currentPage;
 	private int totalPages;
+	private String featureParam;
 
 	/**
 	 * Create presenter and set its dependencies
@@ -61,15 +62,19 @@ public class BeautifulPhotosPresenterImpl implements BeautifulPhotosPresenter {
 	 * Save result to produce photo event to new subscribed listeners but also post immediately after fetching.
 	 * Increments currentPage number after successful fetch.
 	 * If failure, calls ui layer to display an error message.
+	 *
+	 * @param feature Feature param to get from service. Example: 'popular', 'highest rated'...
 	 */
 	@Override
-	public void needPhotos() {
+	public void needPhotos(String feature) {
 		if (currentPage == totalPages) {
 			// No more available pages. Exit
 			return;
 		}
+		featureParam = feature;
+
 		service.getPhotosPopular(
-				ApiService500px.FEATURE_POPULAR,
+				featureParam,
 				ApiService500px.SIZE_SMALL,
 				ApiService500px.SIZE_BIG, currentPage,
 				new Callback<PhotosResponse>() {
@@ -105,7 +110,7 @@ public class BeautifulPhotosPresenterImpl implements BeautifulPhotosPresenter {
 	public void onGalleryRefreshingEvent(GalleryRefreshingEvent event) {
 		Log.d(TAG, "[BeautifulPhotosPresenterImpl - onGalleryRefreshingEvent] - (line 82): " + "");
 		resetPage();
-		needPhotos();
+		needPhotos(featureParam);
 	}
 
 	/**
@@ -116,7 +121,7 @@ public class BeautifulPhotosPresenterImpl implements BeautifulPhotosPresenter {
 	@Subscribe
 	public void onGalleryRequestingMoreEvent(GalleryRequestingMoreEvent event) {
 		Log.d(TAG, "[BeautifulPhotosPresenterImpl - onGalleryRequestingMoreEvent] - (line 92): " + "");
-		needPhotos();
+		needPhotos(featureParam);
 	}
 
 	/**

@@ -1,8 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <string name="app_name">Beautiful Photos</string>
-    <string name="service_error">Error fetching photos. Please try again</string>
+	<string name="app_name">Beautiful Photos</string>
+	<string name="service_error">Error fetching photos. Please try again</string>
 	<string name="empty_frame_message">Tap a photo to load a large version</string>
-
+	<string name="feature_popular">Popular</string>
+	<string name="feature_highest_rated">Highest Rated</string>
 </resources>
