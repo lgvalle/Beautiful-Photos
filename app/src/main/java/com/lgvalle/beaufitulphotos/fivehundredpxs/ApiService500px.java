@@ -11,8 +11,6 @@ import retrofit.http.Query;
  * Retrofit interface describing a 500px APi endpoint
  */
 public interface ApiService500px {
-
-	public final static String FEATURE_POPULAR = "popular";
 	public final static int FIRST_PAGE = 1;
 	public final static int SIZE_SMALL = 2;
 	public final static int SIZE_BIG = 4;

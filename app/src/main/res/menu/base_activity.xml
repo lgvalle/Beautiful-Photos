@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+      xmlns:app="http://schemas.android.com/apk/res-auto">
+        <!-- Search, should appear as action button -->
+    <item android:id="@+id/action_login"
+          android:icon="@android:drawable/ic_lock_idle_lock"
+          android:title="login"
+          app:showAsAction="always"
+          android:visible="true"
+          android:orderInCategory="100"
+
+        />
+
+    <item android:id="@+id/action_profile"
+          android:icon="@android:drawable/ic_dialog_info"
+          android:title="profile"
+          app:showAsAction="always"
+          android:visible="true"
+          android:orderInCategory="100"
+
+        />
+
+
+</menu>

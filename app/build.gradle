@@ -21,6 +21,9 @@ android {
     }
 }
 
+apply plugin: 'android-unit-test'
+
+
 dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
 
@@ -41,4 +44,8 @@ dependencies {
 
 	// Grid
 	compile 'com.etsy.android.grid:library:1.0.+'
+
+	// Testing
+	testCompile 'junit:junit:4.10'
+	testCompile 'org.robolectric:robolectric:2.+'
 }
