@@ -75,6 +75,7 @@ public class GalleryFragment extends BaseFragment implements SwipeRefreshLayout.
 			photos.addAll((List<PhotoModel>) event.getPhotos());
 			// Adapter refresh itself
 			adapter.addElements(photos);
+
 			// Stop refreshing animation
 			swipeLayout.setRefreshing(false);
 		}

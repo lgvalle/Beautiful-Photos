@@ -10,7 +10,7 @@ import butterknife.OnClick;
 import com.lgvalle.beaufitulphotos.BaseFragment;
 import com.lgvalle.beaufitulphotos.R;
 import com.lgvalle.beaufitulphotos.interfaces.PhotoModel;
-import com.lgvalle.beaufitulphotos.utils.BlurTransform;
+import com.lgvalle.beaufitulphotos.utils.BlurTransformation;
 import com.squareup.picasso.Callback;
 import com.squareup.picasso.Picasso;
 
@@ -95,7 +95,7 @@ public class DetailsFragment extends BaseFragment {
 
 		// Load cached placeholder image into ivPhotoThumbnail image view. This should be instant from cache
 		// After that, always load large photo
-		Picasso.with(getActivity()).load(photo.getSmallUrl()).transform(new BlurTransform(getActivity())).into(ivPhotoThumbnail, new Callback() {
+		Picasso.with(getActivity()).load(photo.getSmallUrl()).transform(new BlurTransformation(getActivity())).into(ivPhotoThumbnail, new Callback() {
 			@Override
 			public void onError() {
 				loadLargePhoto();
