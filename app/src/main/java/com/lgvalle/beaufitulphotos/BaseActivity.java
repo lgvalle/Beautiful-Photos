@@ -45,8 +45,8 @@ public abstract class BaseActivity extends ActionBarActivity {
 	 * @param fragmentContainer container id in which fragment is added
 	 * @param fragment          fragment to add
 	 */
-	protected void addFragment(int fragmentContainer, Fragment fragment) {
-		getSupportFragmentManager().beginTransaction().add(fragmentContainer, fragment).commit();
+	protected void addFragment(int fragmentContainer, Fragment fragment, String tag) {
+		getSupportFragmentManager().beginTransaction().add(fragmentContainer, fragment, tag).commit();
 	}
 
 	/**

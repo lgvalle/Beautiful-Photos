@@ -26,6 +26,7 @@ import com.squareup.otto.Subscribe;
  * Finally, the activity (screen) creates a presenter and ask for photos. Results communication will happen through the event bus
  */
 public class BeautifulPhotosScreenImpl extends BaseActivity implements BeautifulPhotosScreen {
+	public static final String FRAGMENT_GALLERY_TAG = "fragment_gallery_tag";
 	/* Manage all business logic for this activity */
 	private BeautifulPhotosPresenter presenter;
 	/* Flag to control toggle between popular and highest rated feeds */
@@ -87,7 +88,7 @@ public class BeautifulPhotosScreenImpl extends BaseActivity implements Beautiful
 	protected void initLayout() {
 		// Add Gallery Fragment to main_content frame. If this is a tablet there will be another frame to add content
 		GalleryFragment galleryFragment = GalleryFragment.newInstance();
-		addFragment(R.id.main_content, galleryFragment);
+		addFragment(R.id.main_content, galleryFragment, FRAGMENT_GALLERY_TAG);
 	}
 
 	@Override
