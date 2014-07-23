@@ -9,7 +9,7 @@ import android.support.v8.renderscript.ScriptIntrinsicBlur;
 import com.squareup.picasso.Transformation;
 
 /**
- * @author Jc Miñarro
+ * Created by lgvalle on 23/04/14.
  */
 
 public class BlurTransform implements Transformation {

@@ -22,7 +22,6 @@ import com.squareup.picasso.Picasso;
  * Initializes photoview with already cached thumbnail while fetching large image
  */
 public class DetailsFragment extends BaseFragment {
-	private static final String TAG = DetailsFragment.class.getSimpleName();
 	private static final String EXTRA_PHOTO = "extra_photo";
 	private PhotoModel photo;
 	private boolean isFullscreen;
