@@ -44,4 +44,11 @@ public abstract class BaseFragment extends Fragment {
 			getActivity().getActionBar().setDisplayHomeAsUpEnabled(b);
 		}
 	}
+
+	protected void setActionBarTitle(String title) {
+		if (getActivity() != null) {
+			getActivity().getActionBar().setTitle(title);
+		}
+
+	}
 }

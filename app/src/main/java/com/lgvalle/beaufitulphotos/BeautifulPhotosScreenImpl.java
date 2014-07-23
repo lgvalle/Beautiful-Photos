@@ -1,6 +1,5 @@
 package com.lgvalle.beaufitulphotos;
 
-import android.net.http.HttpResponseCache;
 import android.view.MenuItem;
 import android.widget.Toast;
 import com.lgvalle.beaufitulphotos.events.GalleryItemChosenEvent;
@@ -19,9 +18,9 @@ import com.squareup.otto.Subscribe;
  * This class is on UI layer, so it's only responsible for UI interactions.
  * <p/>
  * It loads a Presenter to manage all business logic: data fetching and caching.
- *
+ * <p/>
  * The UI consist in two fragments: one with a list of photos and one for photo details.
- *
+ * <p/>
  * Finally, the activity (screen) creates a presenter and ask for photos. Results communication will happen through the event bus
  */
 public class BeautifulPhotosScreenImpl extends BaseActivity implements BeautifulPhotosScreen {
@@ -44,16 +43,6 @@ public class BeautifulPhotosScreenImpl extends BaseActivity implements Beautiful
 		BusHelper.unregister(presenter);
 	}
 
-	@Override
-	protected void onStop() {
-		super.onStop();
-		// Because this is main (and single) activity of the app, clear cache before exit
-		HttpResponseCache cache = HttpResponseCache.getInstalled();
-		if (cache != null) {
-			cache.flush();
-		}
-	}
-
 	/**
 	 * Listen to gallery item selection
 	 *
@@ -70,7 +59,6 @@ public class BeautifulPhotosScreenImpl extends BaseActivity implements Beautiful
 			} else {
 				addFragmentToBackStack(R.id.main_content, details);
 			}
-
 		}
 	}
 
@@ -81,7 +69,6 @@ public class BeautifulPhotosScreenImpl extends BaseActivity implements Beautiful
 				// Pop fragments back stack to navigate backwards
 				getSupportFragmentManager().popBackStack();
 				return true;
-
 		}
 		return super.onOptionsItemSelected(item);
 	}
@@ -94,6 +81,12 @@ public class BeautifulPhotosScreenImpl extends BaseActivity implements Beautiful
 	@Override
 	protected int getContentView() {
 		return R.layout.activity_main;
+	}
+
+	@Override
+	protected void initActionBar() {
+		super.initActionBar();
+		getActionBar().setDisplayShowTitleEnabled(false);
 	}
 
 	@Override

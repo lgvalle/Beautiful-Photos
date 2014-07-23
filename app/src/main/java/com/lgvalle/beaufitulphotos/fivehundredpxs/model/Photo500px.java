@@ -1,5 +1,7 @@
 package com.lgvalle.beaufitulphotos.fivehundredpxs.model;
 
+import android.os.Parcel;
+import android.os.Parcelable;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 import com.lgvalle.beaufitulphotos.interfaces.PhotoModel;
@@ -10,7 +12,7 @@ import java.util.List;
 /**
  * Created by lgvalle on 21/07/14.
  */
-public class Photo500px implements PhotoModel {
+public class Photo500px implements PhotoModel, Parcelable {
 	private static final int INDEX_SMALL = 0;
 	private static final int INDEX_LARGE = 1;
 
@@ -95,4 +97,42 @@ public class Photo500px implements PhotoModel {
 	public void setUser(Photo500pxUser user) {
 		this.user = user;
 	}
+
+
+	@Override
+	public int describeContents() {
+		return 0;
+	}
+
+	@Override
+	public void writeToParcel(Parcel dest, int flags) {
+		dest.writeValue(this.id);
+		dest.writeValue(this.userId);
+		dest.writeString(this.name);
+		dest.writeString(this.description);
+		dest.writeList(this.images);
+		dest.writeParcelable(this.user, flags);
+	}
+
+	public Photo500px() {
+	}
+
+	private Photo500px(Parcel in) {
+		this.id = (Integer) in.readValue(Integer.class.getClassLoader());
+		this.userId = (Integer) in.readValue(Integer.class.getClassLoader());
+		this.name = in.readString();
+		this.description = in.readString();
+		this.images = (List<Photo500pxImage>) in.readSerializable();
+		this.user = in.readParcelable(Photo500pxUser.class.getClassLoader());
+	}
+
+	public static final Creator<Photo500px> CREATOR = new Creator<Photo500px>() {
+		public Photo500px createFromParcel(Parcel source) {
+			return new Photo500px(source);
+		}
+
+		public Photo500px[] newArray(int size) {
+			return new Photo500px[size];
+		}
+	};
 }

@@ -37,7 +37,6 @@ public class GalleryFragment extends BaseFragment implements SwipeRefreshLayout.
 	@InjectView(R.id.swipe_container)
 	SwipeRefreshLayout swipeLayout;
 
-
 	@Override
 	public void onResume() {
 		super.onResume();
@@ -99,6 +98,8 @@ public class GalleryFragment extends BaseFragment implements SwipeRefreshLayout.
 
 	@Override
 	protected void initLayout() {
+		// Show app name on actionbar when fragment is ready
+		getActivity().getActionBar().setDisplayShowTitleEnabled(true);
 		photos = new ArrayList<PhotoModel>();
 		// Swipe to refresh layout
 		swipeLayout.setOnRefreshListener(this);

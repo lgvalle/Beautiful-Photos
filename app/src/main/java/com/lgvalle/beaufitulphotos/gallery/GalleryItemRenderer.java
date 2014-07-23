@@ -42,7 +42,7 @@ public class GalleryItemRenderer extends Renderer<PhotoModel> {
 	 */
 	@Override
 	public View render(Context ctx) {
-		// In this example, the view is just an image view
+		// In this example, generated view is just an image view
 		Picasso.with(ctx).load(getContent().getSmallUrl()).into(ivPhoto);
 		return rootView;
 	}

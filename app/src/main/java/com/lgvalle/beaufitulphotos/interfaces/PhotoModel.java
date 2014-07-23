@@ -1,6 +1,6 @@
 package com.lgvalle.beaufitulphotos.interfaces;
 
-import java.io.Serializable;
+import android.os.Parcelable;
 
 /**
  * Created by lgvalle on 22/07/14.
@@ -8,8 +8,7 @@ import java.io.Serializable;
  * Every photo object need to implement this interface.
  * It Let extend this app to many sources, not just 500px
  */
-public interface PhotoModel extends Serializable {
-
+public interface PhotoModel extends Parcelable {
 	String getSmallUrl();
 	String getLargeUrl();
 	String getTitle();

@@ -34,9 +34,9 @@ public abstract class BaseActivity extends ActionBarActivity {
 		// Child classes can override or extend this methods to provide their own functionality
 		setLayout();
 		getExtras();
+		initActionBar();
 		initPresenter();
 		initLayout();
-		initActionBar();
 	}
 
 	/**
