@@ -3,7 +3,6 @@ package com.lgvalle.beaufitulphotos.gallery;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
@@ -11,6 +10,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 import butterknife.ButterKnife;
 import butterknife.InjectView;
+import butterknife.OnClick;
 import com.facebook.rebound.*;
 import com.lgvalle.beaufitulphotos.BaseFragment;
 import com.lgvalle.beaufitulphotos.R;
@@ -29,8 +29,6 @@ import com.squareup.picasso.Picasso;
 public class DetailsFragment extends BaseFragment {
 	private static final String TAG = DetailsFragment.class.getSimpleName();
 	private static final String EXTRA_PHOTO = "extra_photo";
-	private final BaseSpringSystem mSpringSystem = SpringSystem.create();
-	private final ExampleSpringListener mSpringListener = new ExampleSpringListener();
 	private PhotoModel photo;
 	private boolean isFullscreen;
 
@@ -42,13 +40,31 @@ public class DetailsFragment extends BaseFragment {
 	TextView tvPhotoAuthor;
 	@InjectView(R.id.info_container)
 	View vInfoContainer;
-	private Spring mScaleSpring;
+
+	/** Spring animations */
+	private static final SpringConfig ORIGAMI_SPRING_CONFIG = SpringConfig.fromOrigamiTensionAndFriction(40, 7);
+	private Spring mSpring;
+	private View decorView;
 
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		mScaleSpring = mSpringSystem.createSpring();
+		// Setup the Spring by creating a SpringSystem adding a SimpleListener that renders the
+		// animation whenever the spring is updated.
+		mSpring = SpringSystem
+				.create()
+				.createSpring()
+				.setSpringConfig(ORIGAMI_SPRING_CONFIG)
+				.addListener(new SimpleSpringListener() {
+					@Override
+					public void onSpringUpdate(Spring spring) {
+						// Just tell the UI to update based on the springs current state.
+						render();
+					}
+				});
+
+
 	}
 
 	@Override
@@ -56,7 +72,9 @@ public class DetailsFragment extends BaseFragment {
 		super.onResume();
 		// Show back button in actionbar
 		displayHomeAsUp(true);
-		mScaleSpring.addListener(mSpringListener);
+		// Show actionbar
+		getActivity().getActionBar().show();
+
 	}
 
 	@Override
@@ -69,7 +87,10 @@ public class DetailsFragment extends BaseFragment {
 		// Restore UI in any case
 		showSystemUI();
 
-		mScaleSpring.removeListener(mSpringListener);
+		decorView.setOnSystemUiVisibilityChangeListener(null);
+		// TODO - remove listener
+
+		//mScaleSpring.removeListener(mSpringListener);
 	}
 
 	public static DetailsFragment newInstance(PhotoModel photo) {
@@ -83,14 +104,23 @@ public class DetailsFragment extends BaseFragment {
 	/**
 	 * Click on photo toggle fullscreen visibility
 	 */
-	//@OnClick(R.id.photo)
+	@OnClick(R.id.photo)
 	public void onClickPhoto() {
+		if (mSpring.getEndValue() == 0) {
+			mSpring.setEndValue(1);
+			hideSystemUI();
+		} else {
+			mSpring.setEndValue(0);
+			showSystemUI();
+		}
+		/*
 		if (isFullscreen) {
 			showSystemUI();
 		} else {
 			hideSystemUI();
 		}
 		isFullscreen = !isFullscreen;
+		*/
 	}
 
 	@Override
@@ -104,22 +134,6 @@ public class DetailsFragment extends BaseFragment {
 		// Inject views after inflating and just before init layout. This way every child fragment follows correct sequence
 		ButterKnife.inject(this, rootView);
 		initLayout();
-		ivPhoto.setOnTouchListener(new View.OnTouchListener() {
-			@Override
-			public boolean onTouch(View v, MotionEvent event) {
-				Log.d(TAG, "[DetailsFragment - onTouch] - (line 108): " + "touch");
-				switch (event.getAction()) {
-					case MotionEvent.ACTION_DOWN:
-						mScaleSpring.setEndValue(1);
-						break;
-					case MotionEvent.ACTION_UP:
-					case MotionEvent.ACTION_CANCEL:
-						mScaleSpring.setEndValue(0);
-						break;
-				}
-				return true;
-			}
-		});
 		return rootView;
 	}
 
@@ -128,9 +142,7 @@ public class DetailsFragment extends BaseFragment {
 	 */
 	@Override
 	protected void initLayout() {
-
-
-
+		setupVisibilityChanges();
 		photo = getArguments().getParcelable(EXTRA_PHOTO);
 
 		// Text fields: author and photo title
@@ -154,13 +166,41 @@ public class DetailsFragment extends BaseFragment {
 		});
 	}
 
+	private void setupVisibilityChanges() {
+		decorView = getActivity().getWindow().getDecorView();
+		decorView.setOnSystemUiVisibilityChangeListener
+				(new View.OnSystemUiVisibilityChangeListener() {
+					@Override
+					public void onSystemUiVisibilityChange(int visibility) {
+						// Note that system bars will only be "visible" if none of the
+						// LOW_PROFILE, HIDE_NAVIGATION, or FULLSCREEN flags are set.
+						if ((visibility & View.SYSTEM_UI_FLAG_FULLSCREEN) == 0) {
+							getActivity().getActionBar().show();
+							mSpring.setEndValue(1);
+
+							// TODO: The system bars are visible. Make any desired
+							// adjustments to your UI, such as showing the action bar or
+							// other navigational controls.
+						} else {
+							getActivity().getActionBar().hide();
+							//mSpring.setEndValue(1);
+							// TODO: The system bars are NOT visible. Make any desired
+							// adjustments to your UI, such as hiding the action bar or
+							// other navigational controls.
+						}
+					}
+				});
+	}
+
 	/**
 	 * Hide action bar and info container. Dim UI
 	 */
 	private void hideSystemUI() {
-		getActivity().getActionBar().hide();
-		getActivity().getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LOW_PROFILE);
-		vInfoContainer.setVisibility(View.GONE);
+
+		decorView.setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_STABLE | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION // hide nav bar
+				| View.SYSTEM_UI_FLAG_FULLSCREEN // hide status bar
+				| View.SYSTEM_UI_FLAG_IMMERSIVE);
+		//vInfoContainer.setVisibility(View.GONE);
 	}
 
 	/**
@@ -173,7 +213,7 @@ public class DetailsFragment extends BaseFragment {
 				@Override
 				public void onSuccess() {
 					// After large photo is loaded, hide thumbnail imageview
-					ivPhotoThumbnail.setVisibility(View.GONE);
+					//ivPhotoThumbnail.setVisibility(View.GONE);
 				}
 
 				@Override
@@ -188,18 +228,18 @@ public class DetailsFragment extends BaseFragment {
 	 * Restore UI original visibility
 	 */
 	private void showSystemUI() {
-		getActivity().getActionBar().show();
+
 		// Clear all flags
-		getActivity().getWindow().getDecorView().setSystemUiVisibility(0);
-		vInfoContainer.setVisibility(View.VISIBLE);
+		decorView.setSystemUiVisibility(0);
+		//vInfoContainer.setVisibility(View.VISIBLE);
 	}
 
-	private class ExampleSpringListener extends SimpleSpringListener {
-		@Override
-		public void onSpringUpdate(Spring spring) {
-			float mappedValue = (float) SpringUtil.mapValueFromRangeToRange(spring.getCurrentValue(), 0, 1, 1, 2);
-			ivPhoto.setScaleX(mappedValue);
-			ivPhoto.setScaleY(mappedValue);
-		}
+	private void render() {
+		Log.d(TAG, "[DetailsFragment - render] - (line 236): " + "render!");
+		double value = mSpring.getCurrentValue();
+		// Map the spring to the feedback bar position so that its hidden off screen and bounces in on tap.
+		float barPosition =
+				(float) SpringUtil.mapValueFromRangeToRange(value, 0, 1, 0, tvPhotoAuthor.getHeight());
+		tvPhotoAuthor.setTranslationY(barPosition);
 	}
 }

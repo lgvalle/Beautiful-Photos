@@ -1,21 +1,26 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-	<style name="Theme.AppCompat.Light.NoActionBar" parent="@style/Theme.AppCompat.Light">
+	<style name="Theme.BeautifulPhotos" parent="@style/Theme.AppCompat.Light">
 		<item name="android:actionBarStyle">@style/Theme.BeautifulPhotos.ActionbarStyle</item>
 		<item name="android:icon">@drawable/ic_launcher</item>
 		<item name="android:typeface">serif</item>
 		<item name="android:windowBackground">@color/grey_1000</item>
 		<item name="icon">@drawable/ic_launcher</item>
-
 	</style>
 
+
+
 	<style name="Theme.BeautifulPhotos.ActionbarStyle" parent="@style/Widget.AppCompat.Light.ActionBar.Solid.Inverse">
-		<item name="android:background">@color/actionbar_background</item>
+		<item name="android:background">@android:color/transparent</item>
+		<item name="android:windowActionBarOverlay">true</item>
 		<item name="android:titleTextStyle">@style/Theme.BeautifulPhotos.TitleTextStyleLight</item>
+		<item name="windowActionBarOverlay">true</item>
+		<item name="android:icon">@android:color/transparent</item>
 	</style>
 
 	<style name="Theme.BeautifulPhotos.TitleTextStyleLight" parent="@style/TextAppearance.AppCompat.Widget.ActionBar.Title">
 		<item name="android:textColor">@color/actionbar_title_text_color_light</item>
+
 	</style>
 
 	<style name="PhotoCaption">

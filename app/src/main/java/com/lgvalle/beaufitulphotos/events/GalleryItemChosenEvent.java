@@ -1,5 +1,6 @@
 package com.lgvalle.beaufitulphotos.events;
 
+import android.view.View;
 import com.lgvalle.beaufitulphotos.interfaces.PhotoModel;
 
 /**
@@ -9,13 +10,19 @@ import com.lgvalle.beaufitulphotos.interfaces.PhotoModel;
  */
 public class GalleryItemChosenEvent {
 
+	private final View view;
 	private PhotoModel photo;
 
-	public GalleryItemChosenEvent(PhotoModel photo) {
+	public GalleryItemChosenEvent(PhotoModel photo, View v) {
 		this.photo = photo;
+		this.view = v;
 	}
 
 	public PhotoModel getPhoto() {
 		return photo;
+	}
+
+	public View getView() {
+		return view;
 	}
 }

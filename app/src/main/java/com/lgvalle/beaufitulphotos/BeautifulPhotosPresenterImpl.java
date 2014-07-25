@@ -84,6 +84,9 @@ public class BeautifulPhotosPresenterImpl implements BeautifulPhotosPresenter {
 						screen.showError(R.string.service_error);
 						// Produce event with previous cached results
 						BusHelper.post(producePhotosAvailableEvent());
+						// Page revert
+						decrementPage();
+
 					}
 
 					@Override
@@ -92,12 +95,13 @@ public class BeautifulPhotosPresenterImpl implements BeautifulPhotosPresenter {
 						photos = data.getPhotos();
 						BusHelper.post(producePhotosAvailableEvent());
 
-						// Update totalPages and currentPage info
+						// Update totalPages
 						totalPages = data.getTotalPages();
-						currentPage = data.getCurrentPage() + 1;
+
 					}
 				}
 		);
+		incrementPage();
 	}
 
 	/**
@@ -135,8 +139,16 @@ public class BeautifulPhotosPresenterImpl implements BeautifulPhotosPresenter {
 	/**
 	 * Increments currentPage number
 	 */
-	private void nextPage() {
-		currentPage++;
+	private void incrementPage() {
+		if (currentPage < totalPages) {
+			currentPage++;
+		}
+	}
+
+	private void decrementPage() {
+		if (currentPage > ApiService500px.FIRST_PAGE) {
+			currentPage--;
+		}
 	}
 
 	/**

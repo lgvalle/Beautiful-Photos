@@ -3,6 +3,7 @@ package com.lgvalle.beaufitulphotos;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.ActionBarActivity;
+import android.view.Window;
 
 /**
  * Created by lgvalle on 21/07/14.
@@ -31,6 +32,7 @@ public abstract class BaseActivity extends ActionBarActivity {
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+		getWindow().requestFeature(Window.FEATURE_ACTION_BAR_OVERLAY);
 		// Child classes can override or extend this methods to provide their own functionality
 		setLayout();
 		getExtras();

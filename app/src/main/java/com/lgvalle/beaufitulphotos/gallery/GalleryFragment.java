@@ -1,7 +1,11 @@
 package com.lgvalle.beaufitulphotos.gallery;
 
+import android.os.Bundle;
 import android.support.v4.widget.SwipeRefreshLayout;
+import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.View;
+import android.widget.AbsListView;
 import butterknife.InjectView;
 import butterknife.OnItemClick;
 import com.etsy.android.grid.StaggeredGridView;
@@ -9,6 +13,7 @@ import com.lgvalle.beaufitulphotos.BaseFragment;
 import com.lgvalle.beaufitulphotos.R;
 import com.lgvalle.beaufitulphotos.events.GalleryItemChosenEvent;
 import com.lgvalle.beaufitulphotos.events.GalleryRefreshingEvent;
+import com.lgvalle.beaufitulphotos.events.GalleryRequestingMoreEvent;
 import com.lgvalle.beaufitulphotos.events.PhotosAvailableEvent;
 import com.lgvalle.beaufitulphotos.interfaces.PhotoModel;
 import com.lgvalle.beaufitulphotos.utils.BusHelper;
@@ -28,6 +33,7 @@ import java.util.List;
  * When a new event is received, all photos are added to the adapter.
  */
 public class GalleryFragment extends BaseFragment implements SwipeRefreshLayout.OnRefreshListener {
+	private static final String TAG = GalleryFragment.class.getSimpleName();
 	private RendererAdapter<PhotoModel> adapter;
 	private List<PhotoModel> photos;
 
@@ -36,6 +42,15 @@ public class GalleryFragment extends BaseFragment implements SwipeRefreshLayout.
 	StaggeredGridView grid;
 	@InjectView(R.id.swipe_container)
 	SwipeRefreshLayout swipeLayout;
+	private int mLastFirstVisibleItem;
+	private int columns;
+
+
+	@Override
+	public void onCreate(Bundle savedInstanceState) {
+		super.onCreate(savedInstanceState);
+		columns = getActivity().getResources().getInteger(R.integer.column_count);
+	}
 
 	@Override
 	public void onResume() {
@@ -60,7 +75,9 @@ public class GalleryFragment extends BaseFragment implements SwipeRefreshLayout.
 	 */
 	@OnItemClick(R.id.grid_view)
 	public void onGalleryItemClick(int position) {
-		BusHelper.post(new GalleryItemChosenEvent(photos.get(position)));
+		View v = adapter.getView(position, null, null);
+
+		BusHelper.post(new GalleryItemChosenEvent(photos.get(position), v));
 	}
 
 	/**
@@ -109,6 +126,60 @@ public class GalleryFragment extends BaseFragment implements SwipeRefreshLayout.
 		GalleryItemRenderer renderer = new GalleryItemRenderer();
 		adapter = new RendererAdapter<PhotoModel>(LayoutInflater.from(getActivity()), renderer, getActivity());
 		grid.setAdapter(adapter);
+
+		grid.setOnScrollListener(new AbsListView.OnScrollListener() {
+			@Override
+			public void onScrollStateChanged(AbsListView view, int scrollState) {
+// TODO Auto-generated method stub
+
+				if (view.getId() == grid.getId()) {
+					final int currentFirstVisibleItem = grid.getFirstVisiblePosition();
+					if (currentFirstVisibleItem > mLastFirstVisibleItem) {
+						getActivity().getActionBar().hide();
+					} else if (currentFirstVisibleItem < mLastFirstVisibleItem) {
+						Log.i("a", "scrolling up...");
+						getActivity().getActionBar().show();
+					}
+
+
+
+					if (mLastFirstVisibleItem != currentFirstVisibleItem) {
+						mLastFirstVisibleItem = currentFirstVisibleItem;
+
+					}
+
+					if (grid.getLastVisiblePosition() > adapter.getCount() / 2) {
+						swipeLayout.setRefreshing(true);
+						BusHelper.post(new GalleryRequestingMoreEvent());
+					}
+					Log.d(TAG, "[GalleryFragment - onScrollStateChanged] - (line 151): " + "last visible: "+grid.getLastVisiblePosition());
+
+
+
+				}
+			}
+
+			@Override
+			public void onScroll(AbsListView absListView, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
+				int mLastVisibleItem;
+
+
+			}
+		});
+
+
+	}
+
+	private void loadMoreIfNeeded() {
+		Log.d(TAG, "[GalleryFragment - loadMoreIfNeeded] - (line 161): " + "adapter: "+(adapter.getCount() / (columns+1) ));
+		Log.d(TAG, "[GalleryFragment - loadMoreIfNeeded] - (line 162): " + "last visible: "+mLastFirstVisibleItem);
+		// columns +1 adds a sort of 'padding factor' making request happen earlier
+		if (adapter.getCount() > 0 && adapter.getCount() / (columns+1) < mLastFirstVisibleItem) {
+			Log.d("a", "[GalleryFragment - loadMoreIfNeeded] - (line 162): " + "request more!");
+			swipeLayout.setRefreshing(true);
+			BusHelper.post(new GalleryRequestingMoreEvent());
+		}
+
 	}
 
 	/**
