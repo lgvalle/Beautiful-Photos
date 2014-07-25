@@ -45,6 +45,9 @@ dependencies {
 	// Grid
 	compile 'com.etsy.android.grid:library:1.0.+'
 
+	// Rebound
+	compile 'com.facebook.rebound:rebound:0.3.3'
+
 	// Testing
 	testCompile 'junit:junit:4.10'
 	testCompile 'org.robolectric:robolectric:2.+'
