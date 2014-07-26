@@ -3,6 +3,7 @@ package com.lgvalle.beaufitulphotos;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
+import android.support.v7.app.ActionBarActivity;
 import org.junit.After;
 import org.robolectric.Robolectric;
 import org.robolectric.util.ActivityController;
@@ -10,7 +11,7 @@ import org.robolectric.util.ActivityController;
 /**
  * Thanks to: http://blog.nikhaldimann.com/2013/10/10/robolectric-2-2-some-pages-from-the-missing-manual/
  */
-public class FragmentTest<T extends Fragment> {
+public class FragmentTestCase<T extends Fragment> {
 	private static final String FRAGMENT_TAG = "fragment";
 
 	private ActivityController controller;
@@ -45,8 +46,8 @@ public class FragmentTest<T extends Fragment> {
 	 */
 	public void startFragment(T fragment) {
 		this.fragment = fragment;
-		controller = Robolectric.buildActivity(FragmentActivity.class);
-		activity = (FragmentActivity) controller.create().start().visible().get();
+		controller = Robolectric.buildActivity(ActionBarActivity.class);
+		activity = (ActionBarActivity) controller.create().start().visible().get();
 		FragmentManager manager = activity.getSupportFragmentManager();
 		manager.beginTransaction().add(fragment, FRAGMENT_TAG).commit();
 	}

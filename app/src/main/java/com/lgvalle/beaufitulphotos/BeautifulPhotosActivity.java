@@ -4,6 +4,7 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.Toast;
 import butterknife.ButterKnife;
 import butterknife.InjectView;
@@ -30,18 +31,16 @@ import com.squareup.otto.Subscribe;
  * <p/>
  * Finally, the activity (screen) creates a presenter and ask for photos. Results communication will happen through the event bus
  */
-public class BeautifulPhotosActivity extends BaseActivity implements BeautifulPhotosScreen {
+public class BeautifulPhotosActivity extends BaseActivity implements BeautifulPhotosScreen, SlidingUpPanelLayout.PanelSlideListener {
 	static final String FRAGMENT_GALLERY_TAG = "fragment_gallery_tag";
 	static final String FRAGMENT_DETAILS_TAG = "fragment_details_tag";
 	private static final String TAG = BeautifulPhotosActivity.class.getSimpleName();
-
+	@InjectView(R.id.sliding_layout)
+	SlidingUpPanelLayout slidingPanel;
 	/* Manage all business logic for this activity */
 	private BeautifulPhotosPresenter presenter;
 	/* Flag to control toggle between popular and highest rated feeds */
 	private boolean popular;
-
-	@InjectView(R.id.sliding_layout)
-	SlidingUpPanelLayout slidingPanel;
 
 	@Override
 	protected void onResume() {
@@ -97,6 +96,32 @@ public class BeautifulPhotosActivity extends BaseActivity implements BeautifulPh
 	}
 
 	@Override
+	public void onPanelAnchored(View view) {
+
+	}
+
+	@Override
+	public void onPanelCollapsed(View view) {
+		getSupportActionBar().setDisplayHomeAsUpEnabled(false);
+	}
+
+	@Override
+	public void onPanelExpanded(View view) {
+		getSupportActionBar().show();
+		getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+	}
+
+	@Override
+	public void onPanelHidden(View view) {
+
+	}
+
+	@Override
+	public void onPanelSlide(View view, float v) {
+
+	}
+
+	@Override
 	public void showError(int errorID) {
 		Toast.makeText(this, getString(errorID), Toast.LENGTH_SHORT).show();
 	}
@@ -115,6 +140,9 @@ public class BeautifulPhotosActivity extends BaseActivity implements BeautifulPh
 	@Override
 	protected void initLayout() {
 		ButterKnife.inject(this);
+
+		// Listen to details panel to act in actionbar
+		slidingPanel.setPanelSlideListener(this);
 		// Add Gallery Fragment to main_content frame. If this is a tablet there will be another frame to add content
 		GalleryFragment galleryFragment = GalleryFragment.newInstance();
 		addFragment(R.id.main_content, galleryFragment, FRAGMENT_GALLERY_TAG);
@@ -128,8 +156,7 @@ public class BeautifulPhotosActivity extends BaseActivity implements BeautifulPh
 	protected void initPresenter() {
 		// Init activity presenter with all it's dependencies
 		presenter = new BeautifulPhotosPresenterImpl(this, ApiModule500px.getService());
-		// Request data (photos) to activity presenter. Answer will be post on bus, so no need to callbacks here
+		// Configure presenter: set default feature parameter
 		presenter.setFeature(Feature.Popular.getParam());
-		//presenter.needPhotos();
 	}
 }

@@ -74,23 +74,12 @@ public class DetailsFragment extends BaseFragment {
 	public void onResume() {
 		super.onResume();
 		BusHelper.register(this);
-		// Show back button in actionbar
-		displayHomeAsUp(true);
-		// Show actionbar
-		getActivity().getActionBar().show();
-
 	}
 
 	@Override
 	public void onPause() {
 		super.onPause();
 		BusHelper.unregister(this);
-		// Remove back button when exit
-		displayHomeAsUp(false);
-		// Restore actionbar app title
-		setActionBarTitle(getString(R.string.app_name));
-		// Restore UI in any case
-		showSystemUI();
 
 		decorView.setOnSystemUiVisibilityChangeListener(null);
 		// TODO - remove listener
@@ -190,14 +179,14 @@ public class DetailsFragment extends BaseFragment {
 						// Note that system bars will only be "visible" if none of the
 						// LOW_PROFILE, HIDE_NAVIGATION, or FULLSCREEN flags are set.
 						if ((visibility & View.SYSTEM_UI_FLAG_FULLSCREEN) == 0) {
-							getActivity().getActionBar().show();
+							showActionBar();
 							mSpring.setEndValue(1);
 
 							// TODO: The system bars are visible. Make any desired
 							// adjustments to your UI, such as showing the action bar or
 							// other navigational controls.
 						} else {
-							getActivity().getActionBar().hide();
+							hideActionBar();
 							//mSpring.setEndValue(1);
 							// TODO: The system bars are NOT visible. Make any desired
 							// adjustments to your UI, such as hiding the action bar or
@@ -211,7 +200,6 @@ public class DetailsFragment extends BaseFragment {
 	 * Hide action bar and info container. Dim UI
 	 */
 	private void hideSystemUI() {
-
 		decorView.setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_STABLE | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION // hide nav bar
 				| View.SYSTEM_UI_FLAG_FULLSCREEN // hide status bar
 				| View.SYSTEM_UI_FLAG_IMMERSIVE);
