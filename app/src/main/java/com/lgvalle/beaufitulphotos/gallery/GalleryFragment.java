@@ -4,7 +4,6 @@ import android.os.Bundle;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.util.Log;
 import android.view.LayoutInflater;
-import android.view.View;
 import android.widget.AbsListView;
 import butterknife.InjectView;
 import butterknife.OnItemClick;
@@ -34,14 +33,13 @@ import java.util.List;
  */
 public class GalleryFragment extends BaseFragment implements SwipeRefreshLayout.OnRefreshListener {
 	private static final String TAG = GalleryFragment.class.getSimpleName();
-	private RendererAdapter<PhotoModel> adapter;
-	private List<PhotoModel> photos;
-
 	/* Grid column number is defined in integer.xml, so it depends on screen size */
 	@InjectView(R.id.grid_view)
 	StaggeredGridView grid;
 	@InjectView(R.id.swipe_container)
 	SwipeRefreshLayout swipeLayout;
+	private RendererAdapter<PhotoModel> adapter;
+	private List<PhotoModel> photos;
 	private int mLastFirstVisibleItem;
 	private int columns;
 
@@ -75,9 +73,18 @@ public class GalleryFragment extends BaseFragment implements SwipeRefreshLayout.
 	 */
 	@OnItemClick(R.id.grid_view)
 	public void onGalleryItemClick(int position) {
-		View v = adapter.getView(position, null, null);
+		BusHelper.post(new GalleryItemChosenEvent(photos.get(position)));
+	}
 
-		BusHelper.post(new GalleryItemChosenEvent(photos.get(position), v));
+	/**
+	 * Listen to gallery refreshing event.
+	 * Event could be triggered from this class or from main activity. That's why it's better to just listen the bus
+	 */
+	@Subscribe
+	public void onGalleryRefreshingEvent(GalleryRefreshingEvent event) {
+		adapter.clear();
+		photos.clear();
+		swipeLayout.setRefreshing(true);
 	}
 
 	/**
@@ -129,6 +136,13 @@ public class GalleryFragment extends BaseFragment implements SwipeRefreshLayout.
 
 		grid.setOnScrollListener(new AbsListView.OnScrollListener() {
 			@Override
+			public void onScroll(AbsListView absListView, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
+				int mLastVisibleItem;
+
+
+			}
+
+			@Override
 			public void onScrollStateChanged(AbsListView view, int scrollState) {
 // TODO Auto-generated method stub
 
@@ -142,7 +156,6 @@ public class GalleryFragment extends BaseFragment implements SwipeRefreshLayout.
 					}
 
 
-
 					if (mLastFirstVisibleItem != currentFirstVisibleItem) {
 						mLastFirstVisibleItem = currentFirstVisibleItem;
 
@@ -152,18 +165,10 @@ public class GalleryFragment extends BaseFragment implements SwipeRefreshLayout.
 						swipeLayout.setRefreshing(true);
 						BusHelper.post(new GalleryRequestingMoreEvent());
 					}
-					Log.d(TAG, "[GalleryFragment - onScrollStateChanged] - (line 151): " + "last visible: "+grid.getLastVisiblePosition());
-
+					Log.d(TAG, "[GalleryFragment - onScrollStateChanged] - (line 151): " + "last visible: " + grid.getLastVisiblePosition());
 
 
 				}
-			}
-
-			@Override
-			public void onScroll(AbsListView absListView, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
-				int mLastVisibleItem;
-
-
 			}
 		});
 
@@ -171,25 +176,14 @@ public class GalleryFragment extends BaseFragment implements SwipeRefreshLayout.
 	}
 
 	private void loadMoreIfNeeded() {
-		Log.d(TAG, "[GalleryFragment - loadMoreIfNeeded] - (line 161): " + "adapter: "+(adapter.getCount() / (columns+1) ));
-		Log.d(TAG, "[GalleryFragment - loadMoreIfNeeded] - (line 162): " + "last visible: "+mLastFirstVisibleItem);
+		Log.d(TAG, "[GalleryFragment - loadMoreIfNeeded] - (line 161): " + "adapter: " + (adapter.getCount() / (columns + 1)));
+		Log.d(TAG, "[GalleryFragment - loadMoreIfNeeded] - (line 162): " + "last visible: " + mLastFirstVisibleItem);
 		// columns +1 adds a sort of 'padding factor' making request happen earlier
-		if (adapter.getCount() > 0 && adapter.getCount() / (columns+1) < mLastFirstVisibleItem) {
+		if (adapter.getCount() > 0 && adapter.getCount() / (columns + 1) < mLastFirstVisibleItem) {
 			Log.d("a", "[GalleryFragment - loadMoreIfNeeded] - (line 162): " + "request more!");
 			swipeLayout.setRefreshing(true);
 			BusHelper.post(new GalleryRequestingMoreEvent());
 		}
 
-	}
-
-	/**
-	 * Listen to gallery refreshing event.
-	 * Event could be triggered from this class or from main activity. That's why it's better to just listen the bus
-	 */
-	@Subscribe
-	public void onGalleryRefreshingEvent(GalleryRefreshingEvent event) {
-		adapter.clear();
-		photos.clear();
-		swipeLayout.setRefreshing(true);
 	}
 }
