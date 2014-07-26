@@ -31,8 +31,10 @@ import com.squareup.otto.Subscribe;
  * Finally, the activity (screen) creates a presenter and ask for photos. Results communication will happen through the event bus
  */
 public class BeautifulPhotosActivity extends BaseActivity implements BeautifulPhotosScreen {
-	public static final String FRAGM2ENT_GALLERY_TAG = "fragment_gallery_tag";
+	static final String FRAGMENT_GALLERY_TAG = "fragment_gallery_tag";
+	static final String FRAGMENT_DETAILS_TAG = "fragment_details_tag";
 	private static final String TAG = BeautifulPhotosActivity.class.getSimpleName();
+
 	/* Manage all business logic for this activity */
 	private BeautifulPhotosPresenter presenter;
 	/* Flag to control toggle between popular and highest rated feeds */
@@ -72,17 +74,13 @@ public class BeautifulPhotosActivity extends BaseActivity implements BeautifulPh
 	}
 
 	/**
-	 * Listen to gallery item selection
+	 * Listen to gallery item selection. Open panel when item selected
 	 *
 	 * @param event Event containing selected item
 	 */
 	@Subscribe
 	public void onGalleryItemChosen(GalleryItemChosenEvent event) {
 		if (event != null && event.getPhoto() != null) {
-			// Instance details fragment with photo item
-			// TODO if fragment already exists, just replace photo on it
-			DetailsFragment details = DetailsFragment.newInstance(event.getPhoto());
-			replaceFragment(R.id.frame_details_content, details);
 			slidingPanel.expandPanel();
 		}
 	}
@@ -111,7 +109,7 @@ public class BeautifulPhotosActivity extends BaseActivity implements BeautifulPh
 	@Override
 	protected void initActionBar() {
 		super.initActionBar();
-		getActionBar().setDisplayShowTitleEnabled(false);
+		getSupportActionBar().setDisplayShowTitleEnabled(false);
 	}
 
 	@Override
@@ -119,7 +117,11 @@ public class BeautifulPhotosActivity extends BaseActivity implements BeautifulPh
 		ButterKnife.inject(this);
 		// Add Gallery Fragment to main_content frame. If this is a tablet there will be another frame to add content
 		GalleryFragment galleryFragment = GalleryFragment.newInstance();
-		addFragment(R.id.main_content, galleryFragment, FRAGM2ENT_GALLERY_TAG);
+		addFragment(R.id.main_content, galleryFragment, FRAGMENT_GALLERY_TAG);
+
+		// Add Details fragment with no content. It's fragment responsibility to listen to item selection events on bus
+		DetailsFragment detailsFragment = DetailsFragment.newInstance();
+		addFragment(R.id.frame_details_content, detailsFragment, FRAGMENT_DETAILS_TAG);
 	}
 
 	@Override
@@ -127,6 +129,7 @@ public class BeautifulPhotosActivity extends BaseActivity implements BeautifulPh
 		// Init activity presenter with all it's dependencies
 		presenter = new BeautifulPhotosPresenterImpl(this, ApiModule500px.getService());
 		// Request data (photos) to activity presenter. Answer will be post on bus, so no need to callbacks here
-		presenter.needPhotos(Feature.HighestRated.getParam());
+		presenter.setFeature(Feature.Popular.getParam());
+		//presenter.needPhotos();
 	}
 }

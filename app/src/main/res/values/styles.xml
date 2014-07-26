@@ -6,6 +6,7 @@
 		<item name="android:typeface">serif</item>
 		<item name="android:windowBackground">@color/grey_1000</item>
 		<item name="icon">@drawable/ic_launcher</item>
+		<item name="android:windowNoTitle">false</item>
 	</style>
 
 
@@ -15,7 +16,7 @@
 		<item name="android:windowActionBarOverlay">true</item>
 		<item name="android:titleTextStyle">@style/Theme.BeautifulPhotos.TitleTextStyleLight</item>
 		<item name="windowActionBarOverlay">true</item>
-		<item name="android:icon">@android:color/transparent</item>
+
 	</style>
 
 	<style name="Theme.BeautifulPhotos.TitleTextStyleLight" parent="@style/TextAppearance.AppCompat.Widget.ActionBar.Title">

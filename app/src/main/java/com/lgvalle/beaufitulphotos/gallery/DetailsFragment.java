@@ -14,8 +14,11 @@ import butterknife.OnClick;
 import com.facebook.rebound.*;
 import com.lgvalle.beaufitulphotos.BaseFragment;
 import com.lgvalle.beaufitulphotos.R;
+import com.lgvalle.beaufitulphotos.events.GalleryItemChosenEvent;
 import com.lgvalle.beaufitulphotos.interfaces.PhotoModel;
 import com.lgvalle.beaufitulphotos.utils.BlurTransformation;
+import com.lgvalle.beaufitulphotos.utils.BusHelper;
+import com.squareup.otto.Subscribe;
 import com.squareup.picasso.Callback;
 import com.squareup.picasso.Picasso;
 
@@ -70,6 +73,7 @@ public class DetailsFragment extends BaseFragment {
 	@Override
 	public void onResume() {
 		super.onResume();
+		BusHelper.register(this);
 		// Show back button in actionbar
 		displayHomeAsUp(true);
 		// Show actionbar
@@ -80,6 +84,7 @@ public class DetailsFragment extends BaseFragment {
 	@Override
 	public void onPause() {
 		super.onPause();
+		BusHelper.unregister(this);
 		// Remove back button when exit
 		displayHomeAsUp(false);
 		// Restore actionbar app title
@@ -99,6 +104,10 @@ public class DetailsFragment extends BaseFragment {
 		args.putParcelable(EXTRA_PHOTO, photo);
 		f.setArguments(args);
 		return f;
+	}
+
+	public static DetailsFragment newInstance() {
+		return new DetailsFragment();
 	}
 
 	/**
@@ -143,7 +152,13 @@ public class DetailsFragment extends BaseFragment {
 	@Override
 	protected void initLayout() {
 		setupVisibilityChanges();
-		photo = getArguments().getParcelable(EXTRA_PHOTO);
+		if (getArguments() != null) {
+			loadPhoto(getArguments().<PhotoModel>getParcelable(EXTRA_PHOTO));
+		}
+	}
+
+	private void loadPhoto(PhotoModel photoModel) {
+		photo = photoModel;
 
 		// Text fields: author and photo title
 		tvPhotoAuthor.setText(photo.getAuthorName());
@@ -241,5 +256,16 @@ public class DetailsFragment extends BaseFragment {
 		float barPosition =
 				(float) SpringUtil.mapValueFromRangeToRange(value, 0, 1, 0, tvPhotoAuthor.getHeight());
 		tvPhotoAuthor.setTranslationY(barPosition);
+	}
+
+	@Subscribe
+	public void onGalleryItemChosen(GalleryItemChosenEvent event) {
+		if (event != null && event.getPhoto() != null) {
+			// Clear previous photo
+			ivPhotoThumbnail.setImageBitmap(null);
+			ivPhoto.setImageBitmap(null);
+			// Load new photo
+			loadPhoto(event.getPhoto());
+		}
 	}
 }

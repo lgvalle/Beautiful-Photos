@@ -5,7 +5,7 @@ package com.lgvalle.beaufitulphotos.events;
  *
  * Event: gallery requests more elements
  */
-public class GalleryRequestingMoreEvent {
+public class GalleryRequestingMoreElementsEvent {
 	/**
 	 * Empty. We just need a class to model an event
 	 */

@@ -4,6 +4,7 @@ import android.os.Bundle;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.View;
 import android.widget.AbsListView;
 import butterknife.InjectView;
 import butterknife.OnItemClick;
@@ -12,15 +13,12 @@ import com.lgvalle.beaufitulphotos.BaseFragment;
 import com.lgvalle.beaufitulphotos.R;
 import com.lgvalle.beaufitulphotos.events.GalleryItemChosenEvent;
 import com.lgvalle.beaufitulphotos.events.GalleryRefreshingEvent;
-import com.lgvalle.beaufitulphotos.events.GalleryRequestingMoreEvent;
+import com.lgvalle.beaufitulphotos.events.GalleryRequestingMoreElementsEvent;
 import com.lgvalle.beaufitulphotos.events.PhotosAvailableEvent;
 import com.lgvalle.beaufitulphotos.interfaces.PhotoModel;
 import com.lgvalle.beaufitulphotos.utils.BusHelper;
 import com.lgvalle.beaufitulphotos.utils.RendererAdapter;
 import com.squareup.otto.Subscribe;
-
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Created by lgvalle on 21/07/14.
@@ -38,28 +36,43 @@ public class GalleryFragment extends BaseFragment implements SwipeRefreshLayout.
 	StaggeredGridView grid;
 	@InjectView(R.id.swipe_container)
 	SwipeRefreshLayout swipeLayout;
-	private RendererAdapter<PhotoModel> adapter;
-	private List<PhotoModel> photos;
+
+	RendererAdapter<PhotoModel> adapter;
+
 	private int mLastFirstVisibleItem;
 	private int columns;
-
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		columns = getActivity().getResources().getInteger(R.integer.column_count);
+		// Gallery adapter
+		adapter = new RendererAdapter<PhotoModel>(LayoutInflater.from(getActivity()), new GalleryItemRenderer(), getActivity());
+	}
+
+	@Override
+	public void onViewCreated(View view, Bundle savedInstanceState) {
+		super.onViewCreated(view, savedInstanceState);
 	}
 
 	@Override
 	public void onResume() {
 		super.onResume();
 		BusHelper.register(this);
+		// Empty list? Ask for some photos!
+		if (adapter.isEmpty()) {
+			BusHelper.post(new GalleryRequestingMoreElementsEvent());
+		}
 	}
 
 	@Override
 	public void onPause() {
 		super.onPause();
 		BusHelper.unregister(this);
+	}
+
+	public RendererAdapter<PhotoModel> getAdapter() {
+		return adapter;
 	}
 
 	public static GalleryFragment newInstance() {
@@ -73,7 +86,7 @@ public class GalleryFragment extends BaseFragment implements SwipeRefreshLayout.
 	 */
 	@OnItemClick(R.id.grid_view)
 	public void onGalleryItemClick(int position) {
-		BusHelper.post(new GalleryItemChosenEvent(photos.get(position)));
+		BusHelper.post(new GalleryItemChosenEvent(adapter.getItem(position)));
 	}
 
 	/**
@@ -83,7 +96,11 @@ public class GalleryFragment extends BaseFragment implements SwipeRefreshLayout.
 	@Subscribe
 	public void onGalleryRefreshingEvent(GalleryRefreshingEvent event) {
 		adapter.clear();
-		photos.clear();
+		swipeLayout.setRefreshing(true);
+	}
+
+	@Subscribe
+	public void onGalleryRequestingMoreElementsEvent(GalleryRequestingMoreElementsEvent event) {
 		swipeLayout.setRefreshing(true);
 	}
 
@@ -95,10 +112,8 @@ public class GalleryFragment extends BaseFragment implements SwipeRefreshLayout.
 	@Subscribe
 	public void onNewPhotosEvent(PhotosAvailableEvent event) {
 		if (event != null && event.getPhotos() != null) {
-			// Save photos to display details later
-			photos.addAll((List<PhotoModel>) event.getPhotos());
 			// Adapter refresh itself
-			adapter.addElements(photos);
+			adapter.addElements(event.getPhotos());
 			// Stop refreshing animation
 			swipeLayout.setRefreshing(false);
 		}
@@ -122,24 +137,16 @@ public class GalleryFragment extends BaseFragment implements SwipeRefreshLayout.
 	protected void initLayout() {
 		// Show app name on actionbar when fragment is ready
 		getActivity().getActionBar().setDisplayShowTitleEnabled(true);
-		photos = new ArrayList<PhotoModel>();
+
 		// Swipe to refresh layout
 		swipeLayout.setOnRefreshListener(this);
 		swipeLayout.setColorSchemeResources(R.color.amber_500, R.color.blue_500, R.color.green_500, R.color.deep_orange_500);
-		// Starts in refreshing mode until new items available
-		swipeLayout.setRefreshing(true);
 
-		// Gallery adapter
-		GalleryItemRenderer renderer = new GalleryItemRenderer();
-		adapter = new RendererAdapter<PhotoModel>(LayoutInflater.from(getActivity()), renderer, getActivity());
 		grid.setAdapter(adapter);
-
 		grid.setOnScrollListener(new AbsListView.OnScrollListener() {
 			@Override
 			public void onScroll(AbsListView absListView, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
 				int mLastVisibleItem;
-
-
 			}
 
 			@Override
@@ -161,11 +168,12 @@ public class GalleryFragment extends BaseFragment implements SwipeRefreshLayout.
 
 					}
 
-					if (grid.getLastVisiblePosition() > adapter.getCount() / 2) {
+					if (!swipeLayout.isRefreshing() && grid.getLastVisiblePosition() > adapter.getCount() - columns) {
+						Log.d(TAG, "[GalleryFragment - onScrollStateChanged] - (line 151): " + "Need to refresh because: " + grid.getLastVisiblePosition() + " > "+(adapter.getCount() - columns));
 						swipeLayout.setRefreshing(true);
-						BusHelper.post(new GalleryRequestingMoreEvent());
+						BusHelper.post(new GalleryRequestingMoreElementsEvent());
 					}
-					Log.d(TAG, "[GalleryFragment - onScrollStateChanged] - (line 151): " + "last visible: " + grid.getLastVisiblePosition());
+
 
 
 				}
@@ -182,7 +190,7 @@ public class GalleryFragment extends BaseFragment implements SwipeRefreshLayout.
 		if (adapter.getCount() > 0 && adapter.getCount() / (columns + 1) < mLastFirstVisibleItem) {
 			Log.d("a", "[GalleryFragment - loadMoreIfNeeded] - (line 162): " + "request more!");
 			swipeLayout.setRefreshing(true);
-			BusHelper.post(new GalleryRequestingMoreEvent());
+			BusHelper.post(new GalleryRequestingMoreElementsEvent());
 		}
 
 	}

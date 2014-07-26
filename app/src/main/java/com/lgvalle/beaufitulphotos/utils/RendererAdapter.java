@@ -38,7 +38,7 @@ public class RendererAdapter<Object> extends BaseAdapter {
 	 *
 	 * @param moreElements List of elements to add
 	 */
-	public void addElements(List<Object> moreElements) {
+	public void addElements(List<? extends Object> moreElements) {
 		this.elements.addAll(moreElements);
 		notifyDataSetChanged();
 	}

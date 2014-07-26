@@ -52,6 +52,6 @@ dependencies {
 
 	// Testing
 	testCompile 'junit:junit:4.10'
-	testCompile 'org.robolectric:robolectric:2.+'
+	testCompile 'org.robolectric:robolectric:2.3'
 	testCompile 'org.mockito:mockito-all:1.9.5'
 }

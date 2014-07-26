@@ -2,7 +2,7 @@ package com.lgvalle.beaufitulphotos;
 
 import android.util.Log;
 import com.lgvalle.beaufitulphotos.events.GalleryRefreshingEvent;
-import com.lgvalle.beaufitulphotos.events.GalleryRequestingMoreEvent;
+import com.lgvalle.beaufitulphotos.events.GalleryRequestingMoreElementsEvent;
 import com.lgvalle.beaufitulphotos.events.PhotosAvailableEvent;
 import com.lgvalle.beaufitulphotos.fivehundredpxs.ApiService500px;
 import com.lgvalle.beaufitulphotos.fivehundredpxs.model.PhotosResponse;
@@ -28,7 +28,7 @@ import java.util.List;
  * <p/>
  * It is subscribed to two bus events:
  * <li>{@link com.lgvalle.beaufitulphotos.events.GalleryRefreshingEvent} produced when the gallery needs to completely refresh it's content</li>
- * <li>{@link com.lgvalle.beaufitulphotos.events.GalleryRequestingMoreEvent} produce when gallery needs more items</li>
+ * <li>{@link com.lgvalle.beaufitulphotos.events.GalleryRequestingMoreElementsEvent} produce when gallery needs more items</li>
  * <p/>
  * In both cases queries photo service and dispatch results into app bus.
  */
@@ -104,6 +104,11 @@ public class BeautifulPhotosPresenterImpl implements BeautifulPhotosPresenter {
 		incrementPage();
 	}
 
+	@Override
+	public void setFeature(String param) {
+		featureParam = param;
+	}
+
 	/**
 	 * Refresh whole gallery.
 	 * Reset currentPage counter first
@@ -123,7 +128,7 @@ public class BeautifulPhotosPresenterImpl implements BeautifulPhotosPresenter {
 	 * @param event Event object is empty for this event
 	 */
 	@Subscribe
-	public void onGalleryRequestingMoreEvent(GalleryRequestingMoreEvent event) {
+	public void onGalleryRequestingMoreEvent(GalleryRequestingMoreElementsEvent event) {
 		Log.d(TAG, "[BeautifulPhotosPresenterImpl - onGalleryRequestingMoreEvent] - (line 92): " + "");
 		needPhotos(featureParam);
 	}
