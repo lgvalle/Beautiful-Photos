@@ -158,4 +158,6 @@ public class BeautifulPhotosPresenterImpl implements BeautifulPhotosPresenter {
 		currentPage = ApiService500px.FIRST_PAGE;
 		totalPages = Integer.MAX_VALUE;
 	}
+
+
 }

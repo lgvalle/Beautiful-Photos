@@ -3,6 +3,7 @@ package com.lgvalle.beaufitulphotos.fivehundredpxs.model;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -18,6 +19,12 @@ public class PhotosResponse {
 	private Integer totalPages;
 	@Expose
 	private List<Photo500px> photos;
+
+	public PhotosResponse() {
+		currentPage = 0;
+		totalPages = 0;
+		photos = new ArrayList<Photo500px>();
+	}
 
 	public Integer getCurrentPage() {
 		return currentPage;
