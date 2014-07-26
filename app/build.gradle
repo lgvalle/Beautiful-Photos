@@ -48,6 +48,8 @@ dependencies {
 	// Rebound
 	compile 'com.facebook.rebound:rebound:0.3.3'
 
+	compile 'com.sothree.slidinguppanel:library:+'
+
 	// Testing
 	testCompile 'junit:junit:4.10'
 	testCompile 'org.robolectric:robolectric:2.+'

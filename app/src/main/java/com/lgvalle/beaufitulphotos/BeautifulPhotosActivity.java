@@ -16,6 +16,7 @@ import com.lgvalle.beaufitulphotos.gallery.GalleryFragment;
 import com.lgvalle.beaufitulphotos.interfaces.BeautifulPhotosPresenter;
 import com.lgvalle.beaufitulphotos.interfaces.BeautifulPhotosScreen;
 import com.lgvalle.beaufitulphotos.utils.BusHelper;
+import com.sothree.slidinguppanel.SlidingUpPanelLayout;
 import com.squareup.otto.Subscribe;
 
 
@@ -44,11 +45,12 @@ public class BeautifulPhotosActivity extends BaseActivity implements BeautifulPh
 	@InjectView(R.id.main_content)
 	FrameLayout mainContent;
 
+	@InjectView(R.id.sliding_layout)
+	SlidingUpPanelLayout slidingPanel;
+
 	/** Spring animations */
 	private static final SpringConfig ORIGAMI_SPRING_CONFIG = SpringConfig.fromOrigamiTensionAndFriction(40, 10);
 	private Spring mSpring;
-	private float mClickedX;
-	private float mClickedY;
 
 
 	@Override
@@ -63,7 +65,7 @@ public class BeautifulPhotosActivity extends BaseActivity implements BeautifulPh
 					@Override
 					public void onSpringUpdate(Spring spring) {
 						// Just tell the UI to update based on the springs current state.
-						render();
+						//render();
 					}
 				});
 
@@ -104,22 +106,15 @@ public class BeautifulPhotosActivity extends BaseActivity implements BeautifulPh
 			DetailsFragment details = DetailsFragment.newInstance(event.getPhoto());
 			// Loading target depends on device size: tablet or handset
 
-			mClickedX = event.getView().getX();
-			mClickedY = event.getView().getY();
 
-			addFragment(R.id.frame_details_content, details, "aa");
+			replaceFragment(R.id.frame_details_content, details);
 
 			Log.d(TAG, "[BeautifulPhotosActivity - onGalleryItemChosen] - (line 95): " + "click");
 
-			mSpring.setEndValue(1);
 
-			/*
-			if (getResources().getBoolean(R.bool.isTablet)) {
-				addFragmentToBackStack(R.id.frame_details_content, details);
-			} else {
-				addFragmentToBackStack(R.id.main_content, details);
-			}
-			*/
+			slidingPanel.expandPanel();
+			//mSpring.setEndValue(1);
+
 		}
 	}
 
@@ -150,7 +145,7 @@ public class BeautifulPhotosActivity extends BaseActivity implements BeautifulPh
 				new ViewTreeObserver.OnGlobalLayoutListener() {
 					@Override
 					public void onGlobalLayout() {
-						render();
+						//render();
 						frameDetailsContent.getViewTreeObserver().removeOnGlobalLayoutListener(this);
 					}
 				});

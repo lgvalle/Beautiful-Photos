@@ -1,9 +1,13 @@
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-	xmlns:tools="http://schemas.android.com/tools"
+<com.sothree.slidinguppanel.SlidingUpPanelLayout
+	android:id="@+id/sliding_layout"
+	xmlns:android="http://schemas.android.com/apk/res/android"
+	xmlns:sothree="http://schemas.android.com/apk/res-auto"
 	android:layout_width="match_parent"
 	android:layout_height="match_parent"
-	android:background="@color/grey_1000"
-	tools:context=".MainActivity">
+	android:gravity="bottom"
+	sothree:panelHeight="0dp"
+	sothree:paralaxOffset="100dp"
+	sothree:shadowHeight="10dp">
 
 	<FrameLayout
 		android:id="@+id/main_content"
@@ -14,10 +18,7 @@
 		android:id="@+id/frame_details_content"
 		android:layout_width="match_parent"
 		android:layout_height="match_parent"
-		>
-
-
-
+		android:gravity="center|bottom">
 	</FrameLayout>
 
-</RelativeLayout>
+</com.sothree.slidinguppanel.SlidingUpPanelLayout>
