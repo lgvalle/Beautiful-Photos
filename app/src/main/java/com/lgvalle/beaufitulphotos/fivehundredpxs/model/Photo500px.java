@@ -30,6 +30,10 @@ public class Photo500px implements PhotoModel, Parcelable {
 	@Expose
 	private Photo500pxUser user;
 
+	public Photo500px(String name) {
+		this.name = name;
+	}
+
 	public Integer getId() {
 		return id;
 	}

@@ -8,28 +8,24 @@
 	android:background="@color/grey_1000"
 	android:clickable="true">
 
-	<HorizontalScrollView
-		android:id="@+id/photo_horizontal_container"
-		android:layout_width="wrap_content"
-		android:layout_height="match_parent"
-		android:layout_centerInParent="true"
-		android:scrollbars="none">
-
-		<ImageView
-			android:id="@+id/photo"
-			android:layout_width="wrap_content"
-			android:layout_height="match_parent"
-			android:adjustViewBounds="true"
-			android:scaleType="fitCenter" />
-	</HorizontalScrollView>
-
 	<ImageView
 		android:id="@+id/photo_thumbnail"
 		android:layout_width="match_parent"
 		android:layout_height="match_parent"
 		android:layout_centerInParent="true"
 		android:adjustViewBounds="true"
-		android:scaleType="fitXY" />
+		android:alpha="0.33"
+		android:scaleType="centerCrop" />
+
+	<ImageView
+		android:id="@+id/photo"
+		android:layout_width="match_parent"
+		android:layout_height="match_parent"
+		android:layout_centerInParent="true"
+		android:adjustViewBounds="true"
+		android:scaleType="fitCenter" />
+
+
 
 
 	<RelativeLayout

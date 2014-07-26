@@ -49,6 +49,17 @@ public abstract class BaseFragment extends Fragment {
 		if (getActivity() != null) {
 			getActivity().getActionBar().setTitle(title);
 		}
+	}
 
+	protected void hideActionBar() {
+		if (getActivity() != null) {
+			getActivity().getActionBar().hide();
+		}
+	}
+
+	protected void showActionBar() {
+		if (getActivity() != null) {
+			getActivity().getActionBar().show();
+		}
 	}
 }

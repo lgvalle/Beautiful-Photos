@@ -4,7 +4,7 @@
 
 
 	<!-- Action Bar colors -->
-	<color name="actionbar_background">@color/pink_500</color>
+	<color name="actionbar_background">#8000bcd4</color>
 	<color name="actionbar_title_text_color_light">@color/pink_100</color>
 
 </resources>

@@ -27,6 +27,7 @@ public class ApiModule500px {
 		// Configure an adapter for this client
 		RestAdapter restAdapter = new RestAdapter.Builder()
 				.setEndpoint(END_POINT)
+				.setLogLevel(RestAdapter.LogLevel.BASIC)
 				.setRequestInterceptor(requestInterceptor)
 				.build();
 

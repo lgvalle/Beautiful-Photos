@@ -1,7 +1,5 @@
 package com.lgvalle.beaufitulphotos.interfaces;
 
-import com.lgvalle.beaufitulphotos.fivehundredpxs.model.Feature;
-
 /**
  * Created by lgvalle on 21/07/14.
  *
@@ -10,4 +8,6 @@ import com.lgvalle.beaufitulphotos.fivehundredpxs.model.Feature;
  */
 public interface BeautifulPhotosPresenter {
 	void needPhotos(String feature);
+
+	void setFeature(String param);
 }
