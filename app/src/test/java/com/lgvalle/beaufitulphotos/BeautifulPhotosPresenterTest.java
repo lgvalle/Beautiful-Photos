@@ -1,12 +1,17 @@
 package com.lgvalle.beaufitulphotos;
 
 import com.lgvalle.beaufitulphotos.events.PhotosAvailableEvent;
+import com.lgvalle.beaufitulphotos.fivehundredpxs.Api500pxService;
+import com.lgvalle.beaufitulphotos.fivehundredpxs.model.Feature;
 import com.lgvalle.beaufitulphotos.fivehundredpxs.model.Photo500px;
 import com.lgvalle.beaufitulphotos.fivehundredpxs.model.PhotosResponse;
 import com.lgvalle.beaufitulphotos.interfaces.BeautifulPhotosPresenter;
 import com.lgvalle.beaufitulphotos.interfaces.BeautifulPhotosScreen;
 import com.lgvalle.beaufitulphotos.utils.BusHelper;
 import com.squareup.otto.Subscribe;
+import ly.apps.android.rest.client.Callback;
+import ly.apps.android.rest.client.Response;
+import org.apache.http.HttpStatus;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -16,7 +21,6 @@ import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 import org.robolectric.RobolectricTestRunner;
 import org.robolectric.annotation.Config;
-import retrofit.Callback;
 
 import java.util.ArrayList;
 
@@ -35,17 +39,46 @@ import static org.mockito.Mockito.*;
 @RunWith(RobolectricTestRunner.class)
 public class BeautifulPhotosPresenterTest {
 
+	Response<PhotosResponse> validResponse;
 	PhotosResponse photosResponse = new PhotosResponse();
 
 	private BeautifulPhotosPresenter presenter;
-	private ApiService500px service;
+	private Api500pxService service;
 	private ArrayList<Photo500px> photos;
 	private BeautifulPhotosScreen screen;
 	private PhotosAvailableEvent event;
+	private Response invalidResponse;
+	private Response emptyResponse;
 
-	@After
-	public void tearDown() {
-		BusHelper.unregister(this);
+	@Test
+	public void getPhotos_EmptyResponse_ShouldProduceEmptyEventOnBus() {
+		doAnswer(createEmptyAnswer()).when(service).getPhotos(anyString(), anyInt(), anyInt(), anyString(), anyInt(), any(Callback.class));
+		presenter.needPhotos();
+		assertNotNull(event);
+		assertNotNull(event.getPhotos());
+		assertTrue(event.getPhotos().size() == 0);
+	}
+
+	@Test
+	public void getPhotos_FailureResponse_ShouldProduceEmptyEventOnBusAndFailureMessageOnScreen() {
+		doAnswer(createFailureAnswer()).when(service).getPhotos(anyString(), anyInt(), anyInt(), anyString(), anyInt(), any(Callback.class));
+		presenter.needPhotos();
+
+		verify(screen).showError(R.string.service_error);
+	}
+
+	@Test
+	public void getPhotos_ValidResponse_ShouldProduceValidEventOnBus() {
+		doAnswer(createValidAnswer()).when(service).getPhotos(anyString(), anyInt(), anyInt(), anyString(), anyInt(), any(Callback.class));
+		presenter.needPhotos();
+		assertNotNull(event);
+		assertNotNull(event.getPhotos());
+		assertThat(event.getPhotos().size(), equalTo(photosResponse.getPhotos().size()));
+	}
+
+	@Subscribe
+	public void onPhotosAvailableEvent(PhotosAvailableEvent event) {
+		this.event = event;
 	}
 
 	@Before
@@ -58,65 +91,21 @@ public class BeautifulPhotosPresenterTest {
 		photos.add(new Photo500px("title3"));
 		photosResponse.setPhotos(photos);
 
-		presenter = new BeautifulPhotosPresenterImpl(screen, service);
+		presenter = new BeautifulPhotosPresenterImpl(screen, service, Feature.HighestRated);
 
 		BusHelper.register(this);
 	}
 
-	@Test
-	public void getPhotos_ValidResponse_ShouldProduceValidEventOnBus() {
-		doAnswer(createValidAnswer()).when(service).getPhotosPopular(anyString(), anyInt(), anyInt(), anyInt(), any(Callback.class));
-		presenter.needPhotos("");
-
-		assertNotNull(event.getPhotos());
-		assertThat(event.getPhotos().size(), equalTo(photosResponse.getPhotos().size()));
-	}
-
-	@Test
-	public void getPhotos_EmptyResponse_ShouldProduceEmptyEventOnBus() {
-		doAnswer(createEmptyAnswer()).when(service).getPhotosPopular(anyString(), anyInt(), anyInt(), anyInt(), any(Callback.class));
-		presenter.needPhotos("");
-
-		assertNotNull(event.getPhotos());
-		assertTrue(event.getPhotos().size() == 0);
-	}
-
-	@Test
-	public void getPhotos_FailureResponse_ShouldProduceEmptyEventOnBusAndFailureMessageOnScreen() {
-		doAnswer(createFailureAnswer()).when(service).getPhotosPopular(anyString(), anyInt(), anyInt(), anyInt(), any(Callback.class));
-		presenter.needPhotos("");
-
-		//assertNull(event.getPhotos());
-		verify(screen).showError(R.string.service_error);
-	}
-
-	@Subscribe
-	public void onPhotosAvailableEvent(PhotosAvailableEvent event) {
-		this.event = event;
-	}
-
-
-
-	private void initializeMocks() {
-		service = mock(ApiService500px.class);
-		screen = mock(BeautifulPhotosScreen.class);
-	}
-
-	private Answer createValidAnswer() {
-		return new Answer<Void>() {
-			public Void answer(InvocationOnMock invocation) {
-				Callback<PhotosResponse> callback = (Callback<PhotosResponse>) invocation.getArguments()[4];
-				callback.success(photosResponse, null);
-				return null;
-			}
-		};
+	@After
+	public void tearDown() {
+		BusHelper.unregister(this);
 	}
 
 	private Answer createEmptyAnswer() {
 		return new Answer<Void>() {
 			public Void answer(InvocationOnMock invocation) {
-				Callback<PhotosResponse> callback = (Callback<PhotosResponse>) invocation.getArguments()[4];
-				callback.success(new PhotosResponse(), null);
+				Callback<PhotosResponse> callback = (Callback<PhotosResponse>) invocation.getArguments()[5];
+				callback.onResponse(emptyResponse);
 				return null;
 			}
 		};
@@ -125,10 +114,35 @@ public class BeautifulPhotosPresenterTest {
 	private Answer createFailureAnswer() {
 		return new Answer<Void>() {
 			public Void answer(InvocationOnMock invocation) {
-				Callback<PhotosResponse> callback = (Callback<PhotosResponse>) invocation.getArguments()[4];
-				callback.failure(null);
+				Callback<PhotosResponse> callback = (Callback<PhotosResponse>) invocation.getArguments()[5];
+				callback.onResponse(invalidResponse);
 				return null;
 			}
 		};
+	}
+
+	private Answer createValidAnswer() {
+		return new Answer<Void>() {
+			public Void answer(InvocationOnMock invocation) {
+				Callback<PhotosResponse> callback = (Callback<PhotosResponse>) invocation.getArguments()[5];
+				callback.onResponse(validResponse);
+				return null;
+			}
+		};
+	}
+
+	private void initializeMocks() {
+		service = mock(Api500pxService.class);
+		screen = mock(BeautifulPhotosScreen.class);
+		validResponse = mock(Response.class);
+		when(validResponse.getResult()).thenReturn(photosResponse);
+		when(validResponse.getStatusCode()).thenReturn(HttpStatus.SC_OK);
+
+		invalidResponse = mock(Response.class);
+		when(invalidResponse.getStatusCode()).thenReturn(HttpStatus.SC_BAD_GATEWAY);
+
+		emptyResponse = mock(Response.class);
+		when(emptyResponse.getResult()).thenReturn(new PhotosResponse());
+		when(emptyResponse.getStatusCode()).thenReturn(HttpStatus.SC_OK);
 	}
 }

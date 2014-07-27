@@ -22,7 +22,7 @@ import com.lgvalle.beaufitulphotos.utils.Renderer;
 public class GalleryItemRenderer extends Renderer<PhotoModel> {
 	/* Views */
 	@InjectView(R.id.photo)
-	private ImageView ivPhoto;
+	ImageView ivPhoto;
 
 	public GalleryItemRenderer() {
 		super();

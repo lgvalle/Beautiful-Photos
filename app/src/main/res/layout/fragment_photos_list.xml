@@ -6,7 +6,7 @@
 	android:background="@color/grey_1000">
 
 	<ListView
-		android:id="@+id/grid_view"
+		android:id="@+id/photo_list"
 		android:layout_width="match_parent"
 		android:layout_height="match_parent"
 		android:layout_gravity="start|bottom"

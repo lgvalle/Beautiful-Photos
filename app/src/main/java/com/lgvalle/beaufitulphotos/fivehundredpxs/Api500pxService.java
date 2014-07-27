@@ -35,12 +35,12 @@ public interface Api500pxService {
 	 */
 	@GET("/photos")
 	@Cached(policy = CachePolicy.ENABLED, timeToLive = FIVE_MINUTES)
-	void getPhotosPopular(@QueryParam("consumer_key") String key,
-	                      @QueryParam("image_size[]") int sizeSmall,
-	                      @QueryParam("image_size[]") int sizeLarge,
-	                      @QueryParam("feature") String feature,
-	                      @QueryParam("page") int page,
-	                      Callback<PhotosResponse> callback);
+	void getPhotos(@QueryParam("consumer_key") String key,
+	               @QueryParam("image_size[]") int sizeSmall,
+	               @QueryParam("image_size[]") int sizeLarge,
+	               @QueryParam("feature") String feature,
+	               @QueryParam("page") int page,
+	               Callback<PhotosResponse> callback);
 
 
 	/**

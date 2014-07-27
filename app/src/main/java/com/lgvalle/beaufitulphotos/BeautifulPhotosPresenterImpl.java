@@ -122,13 +122,7 @@ public class BeautifulPhotosPresenterImpl implements BeautifulPhotosPresenter {
 			return;
 		}
 
-		service.getPhotosPopular(
-				service.CONSUMER_KEY_VALUE,
-				service.SIZE_SMALL,
-				service.SIZE_BIG,
-				currentFeature.getParam(),
-				currentPage,
-				new Callback<PhotosResponse>() {
+		service.getPhotos(service.CONSUMER_KEY_VALUE, service.SIZE_SMALL, service.SIZE_BIG, currentFeature.getParam(), currentPage, new Callback<PhotosResponse>() {
 					@Override
 					public void onResponse(Response<PhotosResponse> response) {
 						if (response.getStatusCode() == HttpStatus.SC_OK && response.getResult() != null) {

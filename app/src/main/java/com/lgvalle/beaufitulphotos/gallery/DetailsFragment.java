@@ -32,18 +32,18 @@ public class DetailsFragment extends BaseFragment {
 	private Spring mSpring;
 	/* Views */
 	@InjectView(R.id.photo)
-	private ImageView ivPhoto;
+	ImageView ivPhoto;
 	@InjectView(R.id.photo_thumbnail)
-	private ImageView ivPhotoThumbnail;
+	ImageView ivPhotoThumbnail;
 	@InjectView(R.id.photo_author)
-	private TextView tvPhotoAuthor;
+	TextView tvPhotoAuthor;
 	@InjectView(R.id.photo_favorites)
-	private TextView tvPhotoFavorites;
+	TextView tvPhotoFavorites;
 	@InjectView(R.id.info_container)
-	private View vInfoContainer;
+	View vInfoContainer;
 	@InjectView(R.id.photo_favorites_container)
-	private View vFavoritesContainer;
-	private View decorView;
+	View vFavoritesContainer;
+	View decorView;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {

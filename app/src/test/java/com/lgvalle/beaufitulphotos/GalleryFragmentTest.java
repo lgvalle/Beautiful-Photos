@@ -1,6 +1,6 @@
 package com.lgvalle.beaufitulphotos;
 
-import com.etsy.android.grid.StaggeredGridView;
+import android.widget.ListView;
 import com.lgvalle.beaufitulphotos.fivehundredpxs.model.Photo500px;
 import com.lgvalle.beaufitulphotos.gallery.GalleryFragment;
 import com.lgvalle.beaufitulphotos.interfaces.PhotoModel;
@@ -46,14 +46,14 @@ public class GalleryFragmentTest extends FragmentTestCase<GalleryFragment> {
 	@Test
 	public void addElements_shouldUpdateGridViewElementsCount() {
 		startFragment(fragment);
-		StaggeredGridView gridView = (StaggeredGridView) fragment.getView().findViewById(R.id.grid_view);
+		ListView list = (ListView) fragment.getView().findViewById(R.id.photo_list);
 		RendererAdapter<PhotoModel> adapter = fragment.getAdapter();
 		// Add elements
 		adapter.addElements(photos);
-		assertEquals(gridView.getCount(), adapter.getCount());
+		assertEquals(list.getCount(), adapter.getCount());
 		// Add more elements
 		adapter.addElements(photos);
-		assertEquals(gridView.getCount(), adapter.getCount());
+		assertEquals(list.getCount(), adapter.getCount());
 
 		destroyFragment();
 	}

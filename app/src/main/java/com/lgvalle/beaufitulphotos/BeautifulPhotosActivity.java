@@ -31,8 +31,8 @@ import com.squareup.otto.Subscribe;
  * Finally, the activity (screen) creates a presenter and ask for photos. Results communication will happen through the event bus
  */
 public class BeautifulPhotosActivity extends BaseActivity implements BeautifulPhotosScreen, SlidingUpPanelLayout.PanelSlideListener {
-	private static final String FRAGMENT_GALLERY_TAG = "fragment_gallery_tag";
-	private static final String FRAGMENT_DETAILS_TAG = "fragment_details_tag";
+	static final String FRAGMENT_GALLERY_TAG = "fragment_gallery_tag";
+	static final String FRAGMENT_DETAILS_TAG = "fragment_details_tag";
 	/* Manage all business logic for this activity */
 	private BeautifulPhotosPresenter presenter;
 	/* Actionbar title */
@@ -41,7 +41,7 @@ public class BeautifulPhotosActivity extends BaseActivity implements BeautifulPh
 	private Menu menu;
 	/* Views */
 	@InjectView(R.id.sliding_layout)
-	private SlidingUpPanelLayout panel;
+	SlidingUpPanelLayout panel;
 
 	@Override
 	protected void onResume() {

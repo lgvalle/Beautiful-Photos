@@ -37,10 +37,10 @@ public class GalleryFragment extends BaseFragment {
 	/* Save last visible item to know if scrolling up or down */
 	private int lastVisible;
 	/* Views */
-	@InjectView(R.id.grid_view)
-	private ListView list;
+	@InjectView(R.id.photo_list)
+	ListView list;
 	@InjectView(R.id.progress_bar)
-	private ProgressBar pbLoading;
+	ProgressBar pbLoading;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -78,7 +78,7 @@ public class GalleryFragment extends BaseFragment {
 	 *
 	 * @param position Position of clicked item
 	 */
-	@OnItemClick(R.id.grid_view)
+	@OnItemClick(R.id.photo_list)
 	public void onGalleryItemClick(int position) {
 		BusHelper.post(new GalleryItemChosenEvent(adapter.getItem(position)));
 	}
