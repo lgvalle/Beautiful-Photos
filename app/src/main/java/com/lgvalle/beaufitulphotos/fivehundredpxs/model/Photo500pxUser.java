@@ -2,17 +2,18 @@ package com.lgvalle.beaufitulphotos.fivehundredpxs.model;
 
 import android.os.Parcel;
 import android.os.Parcelable;
-import com.google.gson.annotations.Expose;
+import org.codehaus.jackson.annotate.JsonProperty;
+
+import java.io.Serializable;
 
 /**
  * Created by lgvalle on 21/07/14.
  */
-public class Photo500pxUser implements Parcelable{
+public class Photo500pxUser implements Parcelable, Serializable {
 
-	@Expose
+	@JsonProperty("id")
 	private Integer id;
-
-	@Expose
+	@JsonProperty("fullname")
 	private String fullname;
 
 	public String getFullname() {

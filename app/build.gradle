@@ -19,6 +19,16 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
+	packagingOptions {
+		exclude 'META-INF/DEPENDENCIES'
+		exclude 'META-INF/LICENSE'
+		exclude 'META-INF/LICENSE.txt'
+		exclude 'META-INF/license.txt'
+		exclude 'META-INF/NOTICE'
+		exclude 'META-INF/NOTICE.txt'
+		exclude 'META-INF/notice.txt'
+		exclude 'META-INF/ASL2.0'
+	}
 }
 
 apply plugin: 'android-unit-test'
@@ -48,7 +58,13 @@ dependencies {
 	// Rebound
 	compile 'com.facebook.rebound:rebound:0.3.3'
 
+	// Slide up panel
 	compile 'com.sothree.slidinguppanel:library:+'
+
+	compile ('ly.apps:android-rest:1.2.1-SNAPSHOT@aar') {
+		transitive = true
+		changing = true
+	}
 
 	// Testing
 	testCompile 'junit:junit:4.10'

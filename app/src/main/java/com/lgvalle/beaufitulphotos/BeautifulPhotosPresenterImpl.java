@@ -5,6 +5,7 @@ import com.lgvalle.beaufitulphotos.events.GalleryRefreshingEvent;
 import com.lgvalle.beaufitulphotos.events.GalleryRequestingMoreElementsEvent;
 import com.lgvalle.beaufitulphotos.events.PhotoDetailsAvailableEvent;
 import com.lgvalle.beaufitulphotos.events.PhotosAvailableEvent;
+import com.lgvalle.beaufitulphotos.fivehundredpxs.ApiALTService500px;
 import com.lgvalle.beaufitulphotos.fivehundredpxs.ApiService500px;
 import com.lgvalle.beaufitulphotos.fivehundredpxs.model.Favorites;
 import com.lgvalle.beaufitulphotos.fivehundredpxs.model.Photo500px;
@@ -15,9 +16,8 @@ import com.lgvalle.beaufitulphotos.interfaces.PhotoModel;
 import com.lgvalle.beaufitulphotos.utils.BusHelper;
 import com.squareup.otto.Produce;
 import com.squareup.otto.Subscribe;
-import retrofit.Callback;
-import retrofit.RetrofitError;
-import retrofit.client.Response;
+import ly.apps.android.rest.client.Callback;
+import ly.apps.android.rest.client.Response;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -41,7 +41,7 @@ public class BeautifulPhotosPresenterImpl implements BeautifulPhotosPresenter {
 	/* UI layer interface */
 	private final BeautifulPhotosScreen screen;
 	/* Network service interface */
-	private final ApiService500px service;
+	private final ApiALTService500px service;
 	/* Memory cached photo-model list */
 	private List<Photo500px> photos;
 	/* Service currentPage. Increments after successful operation */
@@ -55,7 +55,7 @@ public class BeautifulPhotosPresenterImpl implements BeautifulPhotosPresenter {
 	 * @param screen  UI Layer interface
 	 * @param service Network service interface
 	 */
-	public BeautifulPhotosPresenterImpl(BeautifulPhotosScreen screen, ApiService500px service) {
+	public BeautifulPhotosPresenterImpl(BeautifulPhotosScreen screen, ApiALTService500px service) {
 		this.screen = screen;
 		this.service = service;
 		this.photos = new ArrayList<Photo500px>();
@@ -72,16 +72,11 @@ public class BeautifulPhotosPresenterImpl implements BeautifulPhotosPresenter {
 	public void needPhotoDetails(PhotoModel p) {
 		final Photo500px photo = photos.get(photos.indexOf(p));
 		if (photo.getFavorites() == null) {
-			service.getFavorites(p.getId(), new Callback<Favorites>() {
+			service.getFavorites(ApiALTService500px.CONSUMER_KEY_VALUE, p.getId(), new Callback<Favorites>() {
 				@Override
-				public void success(Favorites favorites, Response response) {
-					photo.setFavorites(favorites.getTotalItems());
+				public void onResponse(Response<Favorites> favoritesResponse) {
+					photo.setFavorites(favoritesResponse.getResult().getTotalItems());
 					BusHelper.post(new PhotoDetailsAvailableEvent(photo));
-				}
-
-				@Override
-				public void failure(RetrofitError error) {
-
 				}
 			});
 		} else {
@@ -101,24 +96,28 @@ public class BeautifulPhotosPresenterImpl implements BeautifulPhotosPresenter {
 	public void needPhotos(String feature) {
 		if (currentPage < totalPages) {
 			featureParam = feature;
-			service.getPhotosPopular(featureParam, ApiService500px.SIZE_SMALL, ApiService500px.SIZE_BIG, currentPage, new Callback<PhotosResponse>() {
+			service.getPhotosPopular(ApiALTService500px.CONSUMER_KEY_VALUE, featureParam, ApiService500px.SIZE_SMALL, ApiService500px.SIZE_BIG, currentPage, new Callback<PhotosResponse>() {
 						@Override
-						public void failure(RetrofitError error) {
-							// Display error message
-							screen.showError(R.string.service_error);
-							// Page revert
-							decrementPage();
-						}
-
-						@Override
-						public void success(PhotosResponse data, Response response) {
+						public void onResponse(Response<PhotosResponse> photosResponseResponse) {
 							// Cache photos info
+							PhotosResponse data = photosResponseResponse.getResult();
 							photos.addAll(data.getPhotos());
 							// Post new results on bus
 							BusHelper.post(new PhotosAvailableEvent(data.getPhotos()));
 							// Update totalPages
 							totalPages = data.getTotalPages();
+
+							// //@author - lgvalle @date - 27/07/14 @time - 17:37
+							//TODO: [BeautifulPhotosPresenterImpl - onResponse] - handle errors
+							/*
+								// Display error message
+							screen.showError(R.string.service_error);
+							// Page revert
+							decrementPage();
+							 */
 						}
+
+
 					}
 			);
 			incrementPage();

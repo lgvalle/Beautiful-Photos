@@ -27,6 +27,8 @@
 	<style name="PhotoCaption">
 		<item name="android:textColor">@color/amber_500</item>
 		<item name="android:textSize">20dp</item>
+		<item name="android:gravity">center_vertical</item>
+
 	</style>
 
 	<style name="PhotoCaption.Italic" parent="@style/PhotoCaption">

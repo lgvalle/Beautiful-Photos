@@ -10,7 +10,6 @@ import butterknife.ButterKnife;
 import butterknife.InjectView;
 import com.lgvalle.beaufitulphotos.events.GalleryItemChosenEvent;
 import com.lgvalle.beaufitulphotos.fivehundredpxs.ApiALTService500px;
-import com.lgvalle.beaufitulphotos.fivehundredpxs.ApiModule500px;
 import com.lgvalle.beaufitulphotos.fivehundredpxs.model.Feature;
 import com.lgvalle.beaufitulphotos.gallery.DetailsFragment;
 import com.lgvalle.beaufitulphotos.gallery.GalleryFragment;
@@ -162,8 +161,9 @@ public class BeautifulPhotosActivity extends BaseActivity implements BeautifulPh
 		RestClient client = RestClientFactory.defaultClient(this);
 		ApiALTService500px api = RestServiceFactory.getService("https://api.500px.com/v1", ApiALTService500px.class, client);
 
+
 		// Init activity presenter with all it's dependencies
-		presenter = new BeautifulPhotosPresenterImpl(this, ApiModule500px.getService());
+		presenter = new BeautifulPhotosPresenterImpl(this, api);
 		// Configure presenter: set default feature parameter
 		presenter.setFeature(Feature.Popular.getParam());
 	}

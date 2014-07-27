@@ -2,32 +2,31 @@ package com.lgvalle.beaufitulphotos.fivehundredpxs.model;
 
 import android.os.Parcel;
 import android.os.Parcelable;
-import com.google.gson.annotations.Expose;
-import com.google.gson.annotations.SerializedName;
 import com.lgvalle.beaufitulphotos.interfaces.PhotoModel;
+import org.codehaus.jackson.annotate.JsonProperty;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
 /**
  * Created by lgvalle on 21/07/14.
  */
-public class Photo500px implements PhotoModel, Parcelable, Comparable<Photo500px> {
+public class Photo500px implements PhotoModel, Parcelable, Serializable, Comparable<Photo500px> {
 	private static final int INDEX_SMALL = 0;
 	private static final int INDEX_LARGE = 1;
 
-	@Expose
+	@JsonProperty("id")
 	private Integer id;
-	@SerializedName("user_id")
-	@Expose
+	@JsonProperty("user_id")
 	private Integer userId;
-	@Expose
+	@JsonProperty("name")
 	private String name;
-	@Expose
+	@JsonProperty("description")
 	private String description;
-	@Expose
+	@JsonProperty("images")
 	private List<Photo500pxImage> images = new ArrayList<Photo500pxImage>();
-	@Expose
+	@JsonProperty("user")
 	private Photo500pxUser user;
 	private Integer favorites;
 
