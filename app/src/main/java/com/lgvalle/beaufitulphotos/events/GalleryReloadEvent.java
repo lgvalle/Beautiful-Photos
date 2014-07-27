@@ -5,7 +5,7 @@ package com.lgvalle.beaufitulphotos.events;
  *
  * Event: gallery need to be refreshed
  */
-public class GalleryRefreshingEvent {
+public class GalleryReloadEvent {
 	/**
 	 * Empty. We just need a class to model an event
 	 */

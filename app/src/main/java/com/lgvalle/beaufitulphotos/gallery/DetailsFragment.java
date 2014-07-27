@@ -1,6 +1,8 @@
 package com.lgvalle.beaufitulphotos.gallery;
 
+import android.os.Build;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -26,7 +28,7 @@ import com.squareup.picasso.Callback;
  */
 public class DetailsFragment extends BaseFragment {
 	private static final String TAG = DetailsFragment.class.getSimpleName();
-	private static final SpringConfig ORIGAMI_SPRING_CONFIG = SpringConfig.fromOrigamiTensionAndFriction(40, 7);
+	private static final SpringConfig SPRING_CONFIG = SpringConfig.fromOrigamiTensionAndFriction(40, 10);
 	@InjectView(R.id.photo)
 	ImageView ivPhoto;
 	@InjectView(R.id.photo_thumbnail)
@@ -49,7 +51,7 @@ public class DetailsFragment extends BaseFragment {
 		// Setup the Spring by creating a SpringSystem adding a SimpleListener that renders the
 		// animation whenever the spring is updated.
 
-		mSpring = SpringSystem.create().createSpring().setSpringConfig(ORIGAMI_SPRING_CONFIG).addListener(new SimpleSpringListener() {
+		mSpring = SpringSystem.create().createSpring().setSpringConfig(SPRING_CONFIG).addListener(new SimpleSpringListener() {
 			@Override
 			public void onSpringUpdate(Spring spring) {
 				// Just tell the UI to update based on the springs current state.
@@ -83,13 +85,16 @@ public class DetailsFragment extends BaseFragment {
 	 */
 	@OnClick(R.id.photo)
 	public void onClickPhoto() {
-		uiHide();
+		Log.d(TAG, "[DetailsFragment - onClickPhoto] - (line 86): " + "click: spring is: " + mSpring.getCurrentValue());
+		if (mSpring.getCurrentValue() == 0) {
+			uiHide();
+		} else {
+			uiRestore();
+		}
 	}
 
 	/**
 	 * When a new Gallery Item is selected, clear previous image views and load the new one
-	 *
-	 * @param event
 	 */
 	@Subscribe
 	public void onGalleryItemChosen(GalleryItemChosenEvent event) {
@@ -100,9 +105,14 @@ public class DetailsFragment extends BaseFragment {
 			// Load new photo
 			bindImages(event.getPhoto());
 			bindTexts(event.getPhoto());
+			// Also, set photo title on actionbar
+			setActionBarTitle(event.getPhoto().getTitle());
 		}
 	}
 
+	/**
+	 * New details for photo available. Rebind texts to add new info
+	 */
 	@Subscribe
 	public void onPhotoDetailsAvailableEvent(PhotoDetailsAvailableEvent event) {
 		if (event != null && event.getPhoto() != null) {
@@ -140,7 +150,7 @@ public class DetailsFragment extends BaseFragment {
 	 */
 	private void bindImages(final PhotoModel photoModel) {
 		// Start by loading thumbnail photo for background image (this should be instant) Then load current large photo
-		PicassoHelper.load(getActivity(), photoModel.getSmallUrl(), ivPhotoThumbnail, new Callback() {
+		PicassoHelper.loadWithBlur(getActivity(), photoModel.getSmallUrl(), ivPhotoThumbnail, new Callback() {
 			@Override
 			public void onError() {
 				PicassoHelper.load(getActivity(), photoModel.getLargeUrl(), ivPhoto);
@@ -165,9 +175,6 @@ public class DetailsFragment extends BaseFragment {
 			vFavoritesContainer.setVisibility(View.VISIBLE);
 			tvPhotoFavorites.setText(String.valueOf(photoModel.getFavorites()));
 		}
-
-		// Also, set photo title on actionbar
-		setActionBarTitle(photoModel.getTitle());
 	}
 
 
@@ -182,14 +189,23 @@ public class DetailsFragment extends BaseFragment {
 	}
 
 	/**
-	 * Hide action bar and info container. Dim UI
+	 * Hide action bar and info container
 	 */
 	private void uiHide() {
 		// Animate UI away
 		mSpring.setEndValue(1);
-		decorView.setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_STABLE | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION // hide nav bar
-				| View.SYSTEM_UI_FLAG_FULLSCREEN // hide status bar
-				| View.SYSTEM_UI_FLAG_IMMERSIVE);
+		int flags = View.SYSTEM_UI_FLAG_LAYOUT_STABLE
+				| View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
+				| View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
+				| View.SYSTEM_UI_FLAG_HIDE_NAVIGATION // hide nav bar
+				| View.SYSTEM_UI_FLAG_FULLSCREEN;
+
+		// If KITKAT, request immersion
+		if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+			flags |= View.SYSTEM_UI_FLAG_IMMERSIVE;
+		}
+		decorView.setSystemUiVisibility(flags);
+
 	}
 
 	/**

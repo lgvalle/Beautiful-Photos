@@ -6,4 +6,5 @@
 	<string name="empty_frame_message">Tap a photo to load a large version</string>
 	<string name="feature_popular">Popular</string>
 	<string name="feature_highest_rated">Highest Rated</string>
+	<string name="share">Share</string>
 </resources>

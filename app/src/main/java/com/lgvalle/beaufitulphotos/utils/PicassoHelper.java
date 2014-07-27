@@ -9,10 +9,13 @@ import com.squareup.picasso.Picasso;
 
 /**
  * Created by lgvalle on 27/07/14.
+ * <p/>
+ * Custom class to wrap common Picasso calls.
  */
 public class PicassoHelper {
 	/**
 	 * Wrap Picasso. Load url into target. Default callback shows error if something wrong happen.
+	 *
 	 * @param url    Photo url
 	 * @param target ImageView where photo is going to be loaded
 	 */

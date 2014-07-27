@@ -12,7 +12,7 @@ import butterknife.OnItemClick;
 import com.lgvalle.beaufitulphotos.BaseFragment;
 import com.lgvalle.beaufitulphotos.R;
 import com.lgvalle.beaufitulphotos.events.GalleryItemChosenEvent;
-import com.lgvalle.beaufitulphotos.events.GalleryRefreshingEvent;
+import com.lgvalle.beaufitulphotos.events.GalleryReloadEvent;
 import com.lgvalle.beaufitulphotos.events.GalleryRequestingMoreElementsEvent;
 import com.lgvalle.beaufitulphotos.events.PhotosAvailableEvent;
 import com.lgvalle.beaufitulphotos.interfaces.PhotoModel;
@@ -89,7 +89,7 @@ public class GalleryFragment extends BaseFragment {
 	 * Event could be triggered from this class or from main activity. That's why it's better to just listen the bus
 	 */
 	@Subscribe
-	public void onGalleryRefreshingEvent(GalleryRefreshingEvent event) {
+	public void onGalleryRefreshingEvent(GalleryReloadEvent event) {
 		adapter.clear();
 		setRefreshing(true);
 	}

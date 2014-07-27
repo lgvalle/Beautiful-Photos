@@ -15,4 +15,5 @@ public interface PhotoModel extends Parcelable {
 	String getTitle();
 	String getAuthorName();
 	Integer getFavorites();
+	void setFavorites(Integer favorites);
 }

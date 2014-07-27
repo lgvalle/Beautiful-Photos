@@ -51,6 +51,7 @@ public class Photo500px implements PhotoModel, Parcelable, Serializable, Compara
 		return favorites;
 	}
 
+	@Override
 	public void setFavorites(Integer favorites) {
 		this.favorites = favorites;
 	}

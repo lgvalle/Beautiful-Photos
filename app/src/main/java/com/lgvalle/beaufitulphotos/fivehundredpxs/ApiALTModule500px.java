@@ -13,7 +13,6 @@ import ly.apps.android.rest.client.RestServiceFactory;
  */
 public class ApiALTModule500px {
 	private static final String END_POINT = "https://api.500px.com/v1";
-	private static final String CONSUMER_KEY_VALUE = "B2VtIGTPFrbg1YXUVujHhKIo5I9lVjBxgPIFk7A4";
 	private static ApiALTService500px service;
 
 	public static void init(Context ctx) {

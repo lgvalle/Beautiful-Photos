@@ -8,4 +8,7 @@ package com.lgvalle.beaufitulphotos.interfaces;
  */
 public interface BeautifulPhotosScreen {
 	void showError(int errorID);
+
+	void updateTitle(int titleRes);
+
 }

@@ -1,6 +1,5 @@
 package com.lgvalle.beaufitulphotos;
 
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -34,13 +33,12 @@ import com.squareup.otto.Subscribe;
 public class BeautifulPhotosActivity extends BaseActivity implements BeautifulPhotosScreen, SlidingUpPanelLayout.PanelSlideListener {
 	static final String FRAGMENT_GALLERY_TAG = "fragment_gallery_tag";
 	static final String FRAGMENT_DETAILS_TAG = "fragment_details_tag";
-	private static final String TAG = BeautifulPhotosActivity.class.getSimpleName();
 	@InjectView(R.id.sliding_layout)
 	SlidingUpPanelLayout slidingPanel;
 	/* Manage all business logic for this activity */
 	private BeautifulPhotosPresenter presenter;
-	/* Flag to control toggle between popular and highest rated feeds */
-	private boolean popular;
+	private String title;
+	private Menu menu;
 
 	@Override
 	protected void onResume() {
@@ -67,6 +65,7 @@ public class BeautifulPhotosActivity extends BaseActivity implements BeautifulPh
 
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
+		this.menu = menu;
 		MenuInflater inflater = getMenuInflater();
 		inflater.inflate(R.menu.main_menu, menu);
 		return true;
@@ -87,11 +86,20 @@ public class BeautifulPhotosActivity extends BaseActivity implements BeautifulPh
 
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
-		Log.d(TAG, "[BeautifulPhotosActivity - onOptionsItemSelected] - (line 166): " + "options clicks");
 		switch (item.getItemId()) {
 			case android.R.id.home:
 				slidingPanel.collapsePanel();
 				break;
+			case R.id.action_feature_highest_rated:
+				presenter.switchFeature(Feature.HighestRated);
+				break;
+			case R.id.action_feature_popular:
+				presenter.switchFeature(Feature.Popular);
+				break;
+			case R.id.action_share:
+				presenter.share(this);
+				break;
+
 		}
 		return super.onOptionsItemSelected(item);
 	}
@@ -103,13 +111,15 @@ public class BeautifulPhotosActivity extends BaseActivity implements BeautifulPh
 
 	@Override
 	public void onPanelCollapsed(View view) {
-		getSupportActionBar().setDisplayHomeAsUpEnabled(false);
+		getSupportActionBar().setTitle(title);
+		toggleUI(false);
 	}
 
 	@Override
 	public void onPanelExpanded(View view) {
+		// When panel expands (photo selected) always display actionbar with back button
 		getSupportActionBar().show();
-		getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+		toggleUI(true);
 	}
 
 	@Override
@@ -128,14 +138,14 @@ public class BeautifulPhotosActivity extends BaseActivity implements BeautifulPh
 	}
 
 	@Override
-	protected int getContentView() {
-		return R.layout.activity_main;
+	public void updateTitle(int titleRes) {
+		title = getString(titleRes);
+		getSupportActionBar().setTitle(title);
 	}
 
 	@Override
-	protected void initActionBar() {
-		super.initActionBar();
-		getSupportActionBar().setDisplayShowTitleEnabled(false);
+	protected int getContentView() {
+		return R.layout.activity_main;
 	}
 
 	@Override
@@ -156,8 +166,18 @@ public class BeautifulPhotosActivity extends BaseActivity implements BeautifulPh
 	@Override
 	protected void initPresenter() {
 		// Init activity presenter with all it's dependencies
-		presenter = new BeautifulPhotosPresenterImpl(this, ApiALTModule500px.getService());
-		// Configure presenter: set default feature parameter
-		presenter.setFeature(Feature.Popular.getParam());
+		presenter = new BeautifulPhotosPresenterImpl(this, ApiALTModule500px.getService(), Feature.Popular);
+	}
+
+	/**
+	 * Show/Hide elements of UI depending if panel is expanded or not
+	 *
+	 * @param panelExpanded True if panel is expanded, false otherwise
+	 */
+	private void toggleUI(boolean panelExpanded) {
+		getSupportActionBar().setDisplayHomeAsUpEnabled(panelExpanded);
+		menu.findItem(R.id.action_share).setVisible(panelExpanded);
+		menu.findItem(R.id.action_feature_popular).setVisible(!panelExpanded);
+		menu.findItem(R.id.action_feature_highest_rated).setVisible(!panelExpanded);
 	}
 }

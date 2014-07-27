@@ -1,5 +1,8 @@
 package com.lgvalle.beaufitulphotos.interfaces;
 
+import android.content.Context;
+import com.lgvalle.beaufitulphotos.fivehundredpxs.model.Feature;
+
 /**
  * Created by lgvalle on 21/07/14.
  * <p/>
@@ -7,11 +10,11 @@ package com.lgvalle.beaufitulphotos.interfaces;
  * This is just a simple example to illustrate how it's works
  */
 public interface BeautifulPhotosPresenter {
-	void needPhotos(String feature);
+	void needPhotos();
 
-	void needPhotoDetails(PhotoModel p);
+	void needPhotoDetails(PhotoModel photoModel);
 
-	void setFeature(String param);
+	void switchFeature(Feature feature);
 
-
+	void share(Context ctx);
 }
