@@ -12,7 +12,7 @@ import retrofit.http.Query;
  * <p/>
  * Retrofit interface describing a 500px APi endpoint
  */
-public interface ApiService500px {
+public interface ApiALTService500px {
 	public final static int FIRST_PAGE = 1;
 	public final static int SIZE_SMALL = 3;
 	public final static int SIZE_BIG = 4;

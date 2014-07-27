@@ -9,6 +9,7 @@ import android.widget.Toast;
 import butterknife.ButterKnife;
 import butterknife.InjectView;
 import com.lgvalle.beaufitulphotos.events.GalleryItemChosenEvent;
+import com.lgvalle.beaufitulphotos.fivehundredpxs.ApiALTService500px;
 import com.lgvalle.beaufitulphotos.fivehundredpxs.ApiModule500px;
 import com.lgvalle.beaufitulphotos.fivehundredpxs.model.Feature;
 import com.lgvalle.beaufitulphotos.gallery.DetailsFragment;
@@ -18,6 +19,9 @@ import com.lgvalle.beaufitulphotos.interfaces.BeautifulPhotosScreen;
 import com.lgvalle.beaufitulphotos.utils.BusHelper;
 import com.sothree.slidinguppanel.SlidingUpPanelLayout;
 import com.squareup.otto.Subscribe;
+import ly.apps.android.rest.client.RestClient;
+import ly.apps.android.rest.client.RestClientFactory;
+import ly.apps.android.rest.client.RestServiceFactory;
 
 
 /**
@@ -81,6 +85,7 @@ public class BeautifulPhotosActivity extends BaseActivity implements BeautifulPh
 	public void onGalleryItemChosen(GalleryItemChosenEvent event) {
 		if (event != null && event.getPhoto() != null) {
 			slidingPanel.expandPanel();
+			presenter.needPhotoDetails(event.getPhoto());
 		}
 	}
 
@@ -154,6 +159,9 @@ public class BeautifulPhotosActivity extends BaseActivity implements BeautifulPh
 
 	@Override
 	protected void initPresenter() {
+		RestClient client = RestClientFactory.defaultClient(this);
+		ApiALTService500px api = RestServiceFactory.getService("https://api.500px.com/v1", ApiALTService500px.class, client);
+
 		// Init activity presenter with all it's dependencies
 		presenter = new BeautifulPhotosPresenterImpl(this, ApiModule500px.getService());
 		// Configure presenter: set default feature parameter

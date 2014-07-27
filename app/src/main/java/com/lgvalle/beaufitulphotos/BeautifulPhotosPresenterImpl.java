@@ -3,8 +3,11 @@ package com.lgvalle.beaufitulphotos;
 import android.util.Log;
 import com.lgvalle.beaufitulphotos.events.GalleryRefreshingEvent;
 import com.lgvalle.beaufitulphotos.events.GalleryRequestingMoreElementsEvent;
+import com.lgvalle.beaufitulphotos.events.PhotoDetailsAvailableEvent;
 import com.lgvalle.beaufitulphotos.events.PhotosAvailableEvent;
 import com.lgvalle.beaufitulphotos.fivehundredpxs.ApiService500px;
+import com.lgvalle.beaufitulphotos.fivehundredpxs.model.Favorites;
+import com.lgvalle.beaufitulphotos.fivehundredpxs.model.Photo500px;
 import com.lgvalle.beaufitulphotos.fivehundredpxs.model.PhotosResponse;
 import com.lgvalle.beaufitulphotos.interfaces.BeautifulPhotosPresenter;
 import com.lgvalle.beaufitulphotos.interfaces.BeautifulPhotosScreen;
@@ -16,6 +19,7 @@ import retrofit.Callback;
 import retrofit.RetrofitError;
 import retrofit.client.Response;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -39,7 +43,7 @@ public class BeautifulPhotosPresenterImpl implements BeautifulPhotosPresenter {
 	/* Network service interface */
 	private final ApiService500px service;
 	/* Memory cached photo-model list */
-	private List<? extends PhotoModel> photos;
+	private List<Photo500px> photos;
 	/* Service currentPage. Increments after successful operation */
 	private int currentPage;
 	private int totalPages;
@@ -54,7 +58,35 @@ public class BeautifulPhotosPresenterImpl implements BeautifulPhotosPresenter {
 	public BeautifulPhotosPresenterImpl(BeautifulPhotosScreen screen, ApiService500px service) {
 		this.screen = screen;
 		this.service = service;
+		this.photos = new ArrayList<Photo500px>();
 		resetPage();
+	}
+
+	/**
+	 * Request more info about a photo (in this example, the count of favorites)
+	 * The information is only requested if it's not already present
+	 *
+	 * @param p Photo object which we need more details of
+	 */
+	@Override
+	public void needPhotoDetails(PhotoModel p) {
+		final Photo500px photo = photos.get(photos.indexOf(p));
+		if (photo.getFavorites() == null) {
+			service.getFavorites(p.getId(), new Callback<Favorites>() {
+				@Override
+				public void success(Favorites favorites, Response response) {
+					photo.setFavorites(favorites.getTotalItems());
+					BusHelper.post(new PhotoDetailsAvailableEvent(photo));
+				}
+
+				@Override
+				public void failure(RetrofitError error) {
+
+				}
+			});
+		} else {
+			BusHelper.post(new PhotoDetailsAvailableEvent(photo));
+		}
 	}
 
 	/**
@@ -63,50 +95,34 @@ public class BeautifulPhotosPresenterImpl implements BeautifulPhotosPresenter {
 	 * Increments currentPage number after successful fetch.
 	 * If failure, calls ui layer to display an error message.
 	 *
-	 * @param feature Feature param to get from service. Example: 'popular', 'highest rated'...
+	 * @param feature Feature param to get from service. Example: 'popular', 'highest rated', etc.
 	 */
 	@Override
 	public void needPhotos(String feature) {
-		if (currentPage == totalPages) {
-			// No more available pages. Exit
-			return;
+		if (currentPage < totalPages) {
+			featureParam = feature;
+			service.getPhotosPopular(featureParam, ApiService500px.SIZE_SMALL, ApiService500px.SIZE_BIG, currentPage, new Callback<PhotosResponse>() {
+						@Override
+						public void failure(RetrofitError error) {
+							// Display error message
+							screen.showError(R.string.service_error);
+							// Page revert
+							decrementPage();
+						}
+
+						@Override
+						public void success(PhotosResponse data, Response response) {
+							// Cache photos info
+							photos.addAll(data.getPhotos());
+							// Post new results on bus
+							BusHelper.post(new PhotosAvailableEvent(data.getPhotos()));
+							// Update totalPages
+							totalPages = data.getTotalPages();
+						}
+					}
+			);
+			incrementPage();
 		}
-		featureParam = feature;
-
-		service.getPhotosPopular(
-				featureParam,
-				ApiService500px.SIZE_SMALL,
-				ApiService500px.SIZE_BIG, currentPage,
-				new Callback<PhotosResponse>() {
-					@Override
-					public void failure(RetrofitError error) {
-						// Display error message
-						screen.showError(R.string.service_error);
-						// Produce event with previous cached results
-						BusHelper.post(producePhotosAvailableEvent());
-						// Page revert
-						decrementPage();
-
-					}
-
-					@Override
-					public void success(PhotosResponse data, Response response) {
-						// Save photos info and post on bus
-						photos = data.getPhotos();
-						BusHelper.post(producePhotosAvailableEvent());
-
-						// Update totalPages
-						totalPages = data.getTotalPages();
-
-					}
-				}
-		);
-		incrementPage();
-	}
-
-	@Override
-	public void setFeature(String param) {
-		featureParam = param;
 	}
 
 	/**
@@ -118,6 +134,7 @@ public class BeautifulPhotosPresenterImpl implements BeautifulPhotosPresenter {
 	@Subscribe
 	public void onGalleryRefreshingEvent(GalleryRefreshingEvent event) {
 		Log.d(TAG, "[BeautifulPhotosPresenterImpl - onGalleryRefreshingEvent] - (line 82): " + "");
+		photos.clear();
 		resetPage();
 		needPhotos(featureParam);
 	}
@@ -141,18 +158,23 @@ public class BeautifulPhotosPresenterImpl implements BeautifulPhotosPresenter {
 		return new PhotosAvailableEvent(photos);
 	}
 
+	@Override
+	public void setFeature(String param) {
+		featureParam = param;
+	}
+
+	private void decrementPage() {
+		if (currentPage > ApiService500px.FIRST_PAGE) {
+			currentPage--;
+		}
+	}
+
 	/**
 	 * Increments currentPage number
 	 */
 	private void incrementPage() {
 		if (currentPage < totalPages) {
 			currentPage++;
-		}
-	}
-
-	private void decrementPage() {
-		if (currentPage > ApiService500px.FIRST_PAGE) {
-			currentPage--;
 		}
 	}
 

@@ -9,8 +9,8 @@ import butterknife.ButterKnife;
 import butterknife.InjectView;
 import com.lgvalle.beaufitulphotos.R;
 import com.lgvalle.beaufitulphotos.interfaces.PhotoModel;
+import com.lgvalle.beaufitulphotos.utils.PicassoHelper;
 import com.lgvalle.beaufitulphotos.utils.Renderer;
-import com.squareup.picasso.Picasso;
 
 /**
  * Created by lgvalle on 21/07/14.
@@ -43,7 +43,7 @@ public class GalleryItemRenderer extends Renderer<PhotoModel> {
 	@Override
 	public View render(Context ctx) {
 		// In this example, generated view is just an image view
-		Picasso.with(ctx).load(getContent().getSmallUrl()).into(ivPhoto);
+		PicassoHelper.load(ctx, getContent().getSmallUrl(), ivPhoto);
 		return rootView;
 	}
 

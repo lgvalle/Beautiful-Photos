@@ -12,7 +12,7 @@ import java.util.List;
 /**
  * Created by lgvalle on 21/07/14.
  */
-public class Photo500px implements PhotoModel, Parcelable {
+public class Photo500px implements PhotoModel, Parcelable, Comparable<Photo500px> {
 	private static final int INDEX_SMALL = 0;
 	private static final int INDEX_LARGE = 1;
 
@@ -29,9 +29,31 @@ public class Photo500px implements PhotoModel, Parcelable {
 	private List<Photo500pxImage> images = new ArrayList<Photo500pxImage>();
 	@Expose
 	private Photo500pxUser user;
+	private Integer favorites;
 
 	public Photo500px(String name) {
 		this.name = name;
+	}
+
+	@Override
+	public String getAuthorName() {
+		return user.getFullname();
+	}
+
+	public String getDescription() {
+		return description;
+	}
+
+	public void setDescription(String description) {
+		this.description = description;
+	}
+
+	public Integer getFavorites() {
+		return favorites;
+	}
+
+	public void setFavorites(Integer favorites) {
+		this.favorites = favorites;
 	}
 
 	public Integer getId() {
@@ -40,6 +62,45 @@ public class Photo500px implements PhotoModel, Parcelable {
 
 	public void setId(Integer id) {
 		this.id = id;
+	}
+
+	public List<Photo500pxImage> getImages() {
+		return images;
+	}
+
+	public void setImages(List<Photo500pxImage> images) {
+		this.images = images;
+	}
+
+	@Override
+	public String getLargeUrl() {
+		return images.get(INDEX_LARGE).getUrl();
+	}
+
+	public String getName() {
+		return name;
+	}
+
+	public void setName(String name) {
+		this.name = name;
+	}
+
+	@Override
+	public String getSmallUrl() {
+		return images.get(INDEX_SMALL).getUrl();
+	}
+
+	@Override
+	public String getTitle() {
+		return getName();
+	}
+
+	public Photo500pxUser getUser() {
+		return user;
+	}
+
+	public void setUser(Photo500pxUser user) {
+		this.user = user;
 	}
 
 	public Integer getUserId() {
@@ -51,57 +112,9 @@ public class Photo500px implements PhotoModel, Parcelable {
 	}
 
 	@Override
-	public String getSmallUrl() {
-		return images.get(INDEX_SMALL).getUrl();
+	public int compareTo(Photo500px photo500px) {
+		return id.compareTo(photo500px.getId());
 	}
-
-	@Override
-	public String getLargeUrl() {
-		return images.get(INDEX_LARGE).getUrl();
-	}
-
-	@Override
-	public String getTitle() {
-		return getName();
-	}
-
-	public String getName() {
-		return name;
-	}
-
-	public void setName(String name) {
-		this.name = name;
-	}
-
-	public String getDescription() {
-		return description;
-	}
-
-	@Override
-	public String getAuthorName() {
-		return user.getFullname();
-	}
-
-	public void setDescription(String description) {
-		this.description = description;
-	}
-
-	public List<Photo500pxImage> getImages() {
-		return images;
-	}
-
-	public void setImages(List<Photo500pxImage> images) {
-		this.images = images;
-	}
-
-	public Photo500pxUser getUser() {
-		return user;
-	}
-
-	public void setUser(Photo500pxUser user) {
-		this.user = user;
-	}
-
 
 	@Override
 	public int describeContents() {

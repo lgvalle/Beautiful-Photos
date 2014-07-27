@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+
 	<style name="Theme.BeautifulPhotos" parent="@style/Theme.AppCompat.Light">
 		<item name="android:actionBarStyle">@style/Theme.BeautifulPhotos.ActionbarStyle</item>
 		<item name="android:icon">@drawable/ic_launcher</item>
@@ -8,7 +9,6 @@
 		<item name="icon">@drawable/ic_launcher</item>
 		<item name="android:windowNoTitle">false</item>
 	</style>
-
 
 
 	<style name="Theme.BeautifulPhotos.ActionbarStyle" parent="@style/Widget.AppCompat.Light.ActionBar.Solid.Inverse">
@@ -35,6 +35,7 @@
 
 	<style name="PhotoThumbnail">
 		<item name="android:layout_margin">2dp</item>
+		<item name="android:padding">2dp</item>
 		<item name="android:scaleType">centerCrop</item>
 		<item name="android:adjustViewBounds">true</item>
 	</style>

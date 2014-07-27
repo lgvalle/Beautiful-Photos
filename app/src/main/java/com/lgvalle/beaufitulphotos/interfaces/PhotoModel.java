@@ -9,8 +9,10 @@ import android.os.Parcelable;
  * It Let extend this app to many sources, not just 500px
  */
 public interface PhotoModel extends Parcelable {
+	Integer getId();
 	String getSmallUrl();
 	String getLargeUrl();
 	String getTitle();
 	String getAuthorName();
+	Integer getFavorites();
 }

@@ -9,7 +9,7 @@ import retrofit.RestAdapter;
  * Retrofit api module.
  * Builds a rest client based on api interface description
  */
-public class ApiModule500px {
+public class ApiALTModule500px {
 	private static final String END_POINT = "https://api.500px.com/v1";
 	private static final String CONSUMER_KEY_PARAM = "consumer_key";
 	private static final String CONSUMER_KEY_VALUE = "B2VtIGTPFrbg1YXUVujHhKIo5I9lVjBxgPIFk7A4";
@@ -23,6 +23,10 @@ public class ApiModule500px {
 				request.addQueryParam(CONSUMER_KEY_PARAM, CONSUMER_KEY_VALUE);
 			}
 		};
+
+
+
+
 
 		// Configure an adapter for this client
 		RestAdapter restAdapter = new RestAdapter.Builder()
@@ -38,7 +42,7 @@ public class ApiModule500px {
 	/**
 	 * Hide constructor
 	 */
-	private ApiModule500px() {}
+	private ApiALTModule500px() {}
 
 	/**
 	 * Expose rest client
