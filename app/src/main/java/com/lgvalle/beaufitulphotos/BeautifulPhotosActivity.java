@@ -8,7 +8,7 @@ import android.widget.Toast;
 import butterknife.ButterKnife;
 import butterknife.InjectView;
 import com.lgvalle.beaufitulphotos.events.GalleryItemChosenEvent;
-import com.lgvalle.beaufitulphotos.fivehundredpxs.ApiALTModule500px;
+import com.lgvalle.beaufitulphotos.fivehundredpxs.Api500pxModule;
 import com.lgvalle.beaufitulphotos.fivehundredpxs.model.Feature;
 import com.lgvalle.beaufitulphotos.gallery.DetailsFragment;
 import com.lgvalle.beaufitulphotos.gallery.GalleryFragment;
@@ -31,14 +31,17 @@ import com.squareup.otto.Subscribe;
  * Finally, the activity (screen) creates a presenter and ask for photos. Results communication will happen through the event bus
  */
 public class BeautifulPhotosActivity extends BaseActivity implements BeautifulPhotosScreen, SlidingUpPanelLayout.PanelSlideListener {
-	static final String FRAGMENT_GALLERY_TAG = "fragment_gallery_tag";
-	static final String FRAGMENT_DETAILS_TAG = "fragment_details_tag";
-	@InjectView(R.id.sliding_layout)
-	SlidingUpPanelLayout slidingPanel;
+	private static final String FRAGMENT_GALLERY_TAG = "fragment_gallery_tag";
+	private static final String FRAGMENT_DETAILS_TAG = "fragment_details_tag";
 	/* Manage all business logic for this activity */
 	private BeautifulPhotosPresenter presenter;
+	/* Actionbar title */
 	private String title;
+	/* Actionbar menu */
 	private Menu menu;
+	/* Views */
+	@InjectView(R.id.sliding_layout)
+	private SlidingUpPanelLayout panel;
 
 	@Override
 	protected void onResume() {
@@ -58,7 +61,9 @@ public class BeautifulPhotosActivity extends BaseActivity implements BeautifulPh
 
 	@Override
 	public void onBackPressed() {
-		if (!slidingPanel.collapsePanel()) {
+		// If panel is expanded -> collapse
+		// If panel is not expanded forward call to super class (making activity close)
+		if (!panel.collapsePanel()) {
 			super.onBackPressed();
 		}
 	}
@@ -72,14 +77,14 @@ public class BeautifulPhotosActivity extends BaseActivity implements BeautifulPh
 	}
 
 	/**
-	 * Listen to gallery item selection. Open panel when item selected
+	 * Listen to gallery item selection: open panel al request presenter for photo details
 	 *
 	 * @param event Event containing selected item
 	 */
 	@Subscribe
 	public void onGalleryItemChosen(GalleryItemChosenEvent event) {
 		if (event != null && event.getPhoto() != null) {
-			slidingPanel.expandPanel();
+			panel.expandPanel();
 			presenter.needPhotoDetails(event.getPhoto());
 		}
 	}
@@ -88,7 +93,8 @@ public class BeautifulPhotosActivity extends BaseActivity implements BeautifulPh
 	public boolean onOptionsItemSelected(MenuItem item) {
 		switch (item.getItemId()) {
 			case android.R.id.home:
-				slidingPanel.collapsePanel();
+				// Collapse panel if open
+				panel.collapsePanel();
 				break;
 			case R.id.action_feature_highest_rated:
 				presenter.switchFeature(Feature.HighestRated);
@@ -97,20 +103,25 @@ public class BeautifulPhotosActivity extends BaseActivity implements BeautifulPh
 				presenter.switchFeature(Feature.Popular);
 				break;
 			case R.id.action_share:
+				// Share current photo
 				presenter.share(this);
 				break;
-
 		}
 		return super.onOptionsItemSelected(item);
 	}
 
 	@Override
-	public void onPanelAnchored(View view) {
+	public void onPanelAnchored(View view) {}
 
-	}
+	@Override
+	public void onPanelHidden(View view) {}
+
+	@Override
+	public void onPanelSlide(View view, float v) {}
 
 	@Override
 	public void onPanelCollapsed(View view) {
+		// When panel collapsed restore actionbar title and UI elements
 		getSupportActionBar().setTitle(title);
 		toggleUI(false);
 	}
@@ -123,20 +134,15 @@ public class BeautifulPhotosActivity extends BaseActivity implements BeautifulPh
 	}
 
 	@Override
-	public void onPanelHidden(View view) {
-
-	}
-
-	@Override
-	public void onPanelSlide(View view, float v) {
-
-	}
-
-	@Override
 	public void showError(int errorID) {
+		// Sample error managing with a Toast
 		Toast.makeText(this, getString(errorID), Toast.LENGTH_SHORT).show();
 	}
 
+	/**
+	 * Screen api method to update this UI element title
+	 * @param titleRes Title resource
+	 */
 	@Override
 	public void updateTitle(int titleRes) {
 		title = getString(titleRes);
@@ -153,7 +159,7 @@ public class BeautifulPhotosActivity extends BaseActivity implements BeautifulPh
 		ButterKnife.inject(this);
 
 		// Listen to details panel to act in actionbar
-		slidingPanel.setPanelSlideListener(this);
+		panel.setPanelSlideListener(this);
 		// Add Gallery Fragment to main_content frame. If this is a tablet there will be another frame to add content
 		GalleryFragment galleryFragment = GalleryFragment.newInstance();
 		addFragment(R.id.main_content, galleryFragment, FRAGMENT_GALLERY_TAG);
@@ -166,7 +172,7 @@ public class BeautifulPhotosActivity extends BaseActivity implements BeautifulPh
 	@Override
 	protected void initPresenter() {
 		// Init activity presenter with all it's dependencies
-		presenter = new BeautifulPhotosPresenterImpl(this, ApiALTModule500px.getService(), Feature.Popular);
+		presenter = new BeautifulPhotosPresenterImpl(this, Api500pxModule.getService(), Feature.Popular);
 	}
 
 	/**

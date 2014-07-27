@@ -10,11 +10,13 @@ import com.squareup.picasso.Transformation;
 
 /**
  * Created by lgvalle on 23/04/14.
+ * Picasso Blur transformation
  */
 
 public class BlurTransformation implements Transformation {
-
+	private static final float RADIUS = 20;
 	RenderScript rs;
+
 	public BlurTransformation(Context context) {
 		super();
 		rs = RenderScript.create(context);
@@ -34,7 +36,7 @@ public class BlurTransformation implements Transformation {
 		script.setInput(input);
 
 		// Set the blur radius
-		script.setRadius(20);
+		script.setRadius(RADIUS);
 
 		// Start the ScriptIntrinisicBlur
 		script.forEach(output);

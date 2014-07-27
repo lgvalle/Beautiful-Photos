@@ -11,8 +11,7 @@ import com.lgvalle.beaufitulphotos.events.GalleryReloadEvent;
 import com.lgvalle.beaufitulphotos.events.GalleryRequestingMoreElementsEvent;
 import com.lgvalle.beaufitulphotos.events.PhotoDetailsAvailableEvent;
 import com.lgvalle.beaufitulphotos.events.PhotosAvailableEvent;
-import com.lgvalle.beaufitulphotos.fivehundredpxs.ApiALTService500px;
-import com.lgvalle.beaufitulphotos.fivehundredpxs.ApiService500px;
+import com.lgvalle.beaufitulphotos.fivehundredpxs.Api500pxService;
 import com.lgvalle.beaufitulphotos.fivehundredpxs.model.Favorites;
 import com.lgvalle.beaufitulphotos.fivehundredpxs.model.Feature;
 import com.lgvalle.beaufitulphotos.fivehundredpxs.model.PhotosResponse;
@@ -48,7 +47,7 @@ public class BeautifulPhotosPresenterImpl implements BeautifulPhotosPresenter {
 	/* UI layer interface */
 	private final BeautifulPhotosScreen screen;
 	/* Network service interface */
-	private final ApiALTService500px service;
+	private final Api500pxService service;
 	private Feature currentFeature;
 	/* Memory cached photo-model list */
 	private ArrayList<PhotoModel> photos;
@@ -65,7 +64,7 @@ public class BeautifulPhotosPresenterImpl implements BeautifulPhotosPresenter {
 	 * @param screen  UI Layer interface
 	 * @param service Network service interface
 	 */
-	public BeautifulPhotosPresenterImpl(BeautifulPhotosScreen screen, ApiALTService500px service, Feature feature) {
+	public BeautifulPhotosPresenterImpl(BeautifulPhotosScreen screen, Api500pxService service, Feature feature) {
 		this.screen = screen;
 		this.service = service;
 		this.currentFeature = feature;
@@ -83,14 +82,15 @@ public class BeautifulPhotosPresenterImpl implements BeautifulPhotosPresenter {
 	public void needPhotoDetails(PhotoModel photoModel) {
 		itemIndex = photos.indexOf(photoModel);
 		if (itemIndex == -1) {
-			Log.e(TAG, "[BeautifulPhotosPresenterImpl - needPhotoDetails] - (line 93): " + "Asking for details of a not saved item. Should never happen");
+			// Item is not in photos array, something wrong has happen
+			Log.e(TAG, "[BeautifulPhotosPresenterImpl - needPhotoDetails] - (line 87): " + "Asking for details of a not saved item. Should never happen");
 			return;
 		}
 
 		final PhotoModel photo = photos.get(itemIndex);
 		// First time asking for details (favorites in this example) we get them from server and save them into the photo item to avoid future calls
 		if (photo.getFavorites() == null) {
-			service.getFavorites(ApiALTService500px.CONSUMER_KEY_VALUE, photoModel.getId(), new Callback<Favorites>() {
+			service.getFavorites(Api500pxService.CONSUMER_KEY_VALUE, photoModel.getId(), new Callback<Favorites>() {
 				@Override
 				public void onResponse(Response<Favorites> response) {
 					if (response.getStatusCode() == HttpStatus.SC_OK && response.getResult() != null) {
@@ -106,12 +106,11 @@ public class BeautifulPhotosPresenterImpl implements BeautifulPhotosPresenter {
 			// Already got details, just post photo item on bus
 			BusHelper.post(new PhotoDetailsAvailableEvent(photo));
 		}
-
 	}
 
 	/**
 	 * Request photos to service.
-	 * Save result to produce photo event to new subscribed listeners but also post immediately after fetching.
+	 * Save results and post on bus immediately after fetching.
 	 * Increments currentPage number after successful fetch.
 	 * If failure, calls ui layer to display an error message.
 	 */
@@ -123,7 +122,13 @@ public class BeautifulPhotosPresenterImpl implements BeautifulPhotosPresenter {
 			return;
 		}
 
-		service.getPhotosPopular(ApiALTService500px.CONSUMER_KEY_VALUE, currentFeature.getParam(), ApiService500px.SIZE_SMALL, ApiService500px.SIZE_BIG, currentPage, new Callback<PhotosResponse>() {
+		service.getPhotosPopular(
+				service.CONSUMER_KEY_VALUE,
+				service.SIZE_SMALL,
+				service.SIZE_BIG,
+				currentFeature.getParam(),
+				currentPage,
+				new Callback<PhotosResponse>() {
 					@Override
 					public void onResponse(Response<PhotosResponse> response) {
 						if (response.getStatusCode() == HttpStatus.SC_OK && response.getResult() != null) {
@@ -213,7 +218,7 @@ public class BeautifulPhotosPresenterImpl implements BeautifulPhotosPresenter {
 	}
 
 	private void decrementPage() {
-		if (currentPage > ApiService500px.FIRST_PAGE) {
+		if (currentPage > service.FIRST_PAGE) {
 			currentPage--;
 		}
 	}
@@ -231,7 +236,7 @@ public class BeautifulPhotosPresenterImpl implements BeautifulPhotosPresenter {
 	 * Reset currentPage number to first one in current service
 	 */
 	private void resetPage() {
-		currentPage = ApiService500px.FIRST_PAGE;
+		currentPage = Api500pxService.FIRST_PAGE;
 		totalPages = Integer.MAX_VALUE;
 	}
 }

@@ -4,24 +4,18 @@ import com.lgvalle.beaufitulphotos.R;
 
 /**
  * Created by luis.gonzalez on 23/07/14.
+ * Enum to represent service features
  */
 public enum Feature {
-	Popular("popular", R.string.feature_popular, R.drawable.ic_action_group),
-	HighestRated("highest_rated", R.string.feature_highest_rated, R.drawable.ic_action_important);
+	Popular("popular", R.string.feature_popular),
+	HighestRated("highest_rated", R.string.feature_highest_rated);
 
 	private final String param;
 	private final int title;
-	private final int icon;
 
-
-	Feature(String param, int title, int icon) {
+	Feature(String param, int title) {
 		this.param = param;
 		this.title = title;
-		this.icon = icon;
-	}
-
-	public int getIcon() {
-		return icon;
 	}
 
 	public String getParam() {

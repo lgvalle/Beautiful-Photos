@@ -1,7 +1,6 @@
 package com.lgvalle.beaufitulphotos;
 
 import com.lgvalle.beaufitulphotos.events.PhotosAvailableEvent;
-import com.lgvalle.beaufitulphotos.fivehundredpxs.ApiService500px;
 import com.lgvalle.beaufitulphotos.fivehundredpxs.model.Photo500px;
 import com.lgvalle.beaufitulphotos.fivehundredpxs.model.PhotosResponse;
 import com.lgvalle.beaufitulphotos.interfaces.BeautifulPhotosPresenter;

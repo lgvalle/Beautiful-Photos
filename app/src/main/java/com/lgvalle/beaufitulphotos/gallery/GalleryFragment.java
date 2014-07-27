@@ -1,7 +1,6 @@
 package com.lgvalle.beaufitulphotos.gallery;
 
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.AbsListView;
@@ -31,21 +30,21 @@ import com.squareup.otto.Subscribe;
  */
 public class GalleryFragment extends BaseFragment {
 	private static final String TAG = GalleryFragment.class.getSimpleName();
-	/* Grid column number is defined in integer.xml, so it depends on screen size */
+	/* Items before list end when loading more elements start */
+	private static final int LOAD_OFFSET = 1;
+	/* List adapter */
+	private RendererAdapter<PhotoModel> adapter;
+	/* Save last visible item to know if scrolling up or down */
+	private int lastVisible;
+	/* Views */
 	@InjectView(R.id.grid_view)
-	ListView grid;
+	private ListView list;
 	@InjectView(R.id.progress_bar)
-	ProgressBar progressBar;
-
-	RendererAdapter<PhotoModel> adapter;
-
-	private int mLastFirstVisibleItem;
-	private int columns;
+	private ProgressBar pbLoading;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		columns = getActivity().getResources().getInteger(R.integer.column_count);
 		// Gallery adapter
 		adapter = new RendererAdapter<PhotoModel>(LayoutInflater.from(getActivity()), new GalleryItemRenderer(), getActivity());
 	}
@@ -91,12 +90,12 @@ public class GalleryFragment extends BaseFragment {
 	@Subscribe
 	public void onGalleryRefreshingEvent(GalleryReloadEvent event) {
 		adapter.clear();
-		setRefreshing(true);
+		setLoading(true);
 	}
 
 	@Subscribe
 	public void onGalleryRequestingMoreElementsEvent(GalleryRequestingMoreElementsEvent event) {
-		setRefreshing(true);
+		setLoading(true);
 	}
 
 	/**
@@ -111,7 +110,7 @@ public class GalleryFragment extends BaseFragment {
 			adapter.addElements(event.getPhotos());
 
 			// Stop refreshing animation
-			setRefreshing(false);
+			setLoading(false);
 		}
 	}
 
@@ -130,8 +129,8 @@ public class GalleryFragment extends BaseFragment {
 		// Show app name on actionbar when fragment is ready
 		getActivity().getActionBar().setDisplayShowTitleEnabled(true);
 
-		grid.setAdapter(adapter);
-		grid.setOnScrollListener(new AbsListView.OnScrollListener() {
+		list.setAdapter(adapter);
+		list.setOnScrollListener(new AbsListView.OnScrollListener() {
 			@Override
 			public void onScroll(AbsListView absListView, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
 				// nothing to do
@@ -139,25 +138,18 @@ public class GalleryFragment extends BaseFragment {
 
 			@Override
 			public void onScrollStateChanged(AbsListView view, int scrollState) {
-				if (view.getId() == grid.getId()) {
-					final int currentFirstVisibleItem = grid.getFirstVisiblePosition();
-					if (currentFirstVisibleItem > mLastFirstVisibleItem) {
+				if (view.getId() == list.getId()) {
+					final int currentFirstVisibleItem = list.getFirstVisiblePosition();
+					if (currentFirstVisibleItem > lastVisible) {
 						hideActionBar();
-					} else if (currentFirstVisibleItem < mLastFirstVisibleItem) {
+					} else if (currentFirstVisibleItem < lastVisible) {
 						showActionBar();
 					}
+					lastVisible = currentFirstVisibleItem;
 
 
-					if (mLastFirstVisibleItem != currentFirstVisibleItem) {
-						mLastFirstVisibleItem = currentFirstVisibleItem;
+					loadMore();
 
-					}
-
-					if (!isRefreshing() && grid.getLastVisiblePosition() > adapter.getCount() - columns) {
-						Log.d(TAG, "[GalleryFragment - onScrollStateChanged] - (line 151): " + "Need to refresh because: " + grid.getLastVisiblePosition() + " > " + (adapter.getCount() - columns));
-						setRefreshing(true);
-						BusHelper.post(new GalleryRequestingMoreElementsEvent());
-					}
 				}
 			}
 		});
@@ -165,12 +157,29 @@ public class GalleryFragment extends BaseFragment {
 
 	}
 
-	private boolean isRefreshing() {
-		return View.VISIBLE == progressBar.getVisibility();
+	/**
+	 * Request more items if already scrolled to the end of the list
+	 */
+	private void loadMore() {
+		// Load more items if not already loading
+		if (!isLoading() && list.getLastVisiblePosition() >= adapter.getCount() - LOAD_OFFSET) {
+			setLoading(true);
+			BusHelper.post(new GalleryRequestingMoreElementsEvent());
+		}
 	}
 
-	private void setRefreshing(boolean refreshing) {
-		progressBar.setVisibility(refreshing ? View.VISIBLE : View.GONE);
+	/**
+	 * @return true if loading progress bar is visible
+	 */
+	private boolean isLoading() {
+		return View.VISIBLE == pbLoading.getVisibility();
+	}
 
+	/**
+	 * When loading, display progress bar
+	 * @param refreshing True if refreshing, false otherwise
+	 */
+	private void setLoading(boolean refreshing) {
+		pbLoading.setVisibility(refreshing ? View.VISIBLE : View.GONE);
 	}
 }

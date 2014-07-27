@@ -34,17 +34,6 @@ public abstract class BaseFragment extends Fragment {
 		return rootView;
 	}
 
-	/**
-	 * Wrapper for null check
-	 *
-	 * @param b if true up is enabled
-	 */
-	protected void displayHomeAsUp(boolean b) {
-		if (getActivity() != null) {
-			getActivity().getActionBar().setDisplayHomeAsUpEnabled(b);
-		}
-	}
-
 	protected void setActionBarTitle(String title) {
 		if (getActivity() != null) {
 			getActivity().getActionBar().setTitle(title);

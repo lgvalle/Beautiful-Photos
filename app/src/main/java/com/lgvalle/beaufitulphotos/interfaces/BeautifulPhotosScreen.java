@@ -4,11 +4,19 @@ package com.lgvalle.beaufitulphotos.interfaces;
  * Created by lgvalle on 22/07/14.
  *
  * Interface for main activity.
- * This is just a simple example to illustrate how it's works
+ * Just a simple example to illustrate how it's works
  */
 public interface BeautifulPhotosScreen {
-	void showError(int errorID);
+	/**
+	 * Show error on UI
+	 * @param errorId Error resource id
+	 */
+	void showError(int errorId);
 
-	void updateTitle(int titleRes);
+	/**
+	 * Update UI title
+	 * @param titleId Title resource id
+	 */
+	void updateTitle(int titleId);
 
 }

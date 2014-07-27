@@ -20,8 +20,9 @@ import com.lgvalle.beaufitulphotos.utils.Renderer;
  * This class binds a concrete view with a concrete object.
  */
 public class GalleryItemRenderer extends Renderer<PhotoModel> {
+	/* Views */
 	@InjectView(R.id.photo)
-	ImageView ivPhoto;
+	private ImageView ivPhoto;
 
 	public GalleryItemRenderer() {
 		super();

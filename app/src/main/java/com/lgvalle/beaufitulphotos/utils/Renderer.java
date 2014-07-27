@@ -19,8 +19,7 @@ public abstract class Renderer<T> {
 	/**
 	 * Need public empty constructor to build empty renderer
 	 */
-	public Renderer() {
-	}
+	public Renderer() {}
 
 	/**
 	 * Default constructor

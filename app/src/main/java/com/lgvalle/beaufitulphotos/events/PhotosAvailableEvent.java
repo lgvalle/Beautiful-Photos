@@ -7,10 +7,9 @@ import java.util.List;
 /**
  * Created by lgvalle on 21/07/14.
  *
- * Event: new photos available
+ * Event: new photos list available
  */
 public class PhotosAvailableEvent {
-
 	private final List<? extends PhotoModel> photos;
 
 	public PhotosAvailableEvent(List<? extends PhotoModel> photos) {

@@ -2,7 +2,6 @@ package com.lgvalle.beaufitulphotos.gallery;
 
 import android.os.Build;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -28,21 +27,22 @@ import com.squareup.picasso.Callback;
  */
 public class DetailsFragment extends BaseFragment {
 	private static final String TAG = DetailsFragment.class.getSimpleName();
+	/* Animations */
 	private static final SpringConfig SPRING_CONFIG = SpringConfig.fromOrigamiTensionAndFriction(40, 10);
-	@InjectView(R.id.photo)
-	ImageView ivPhoto;
-	@InjectView(R.id.photo_thumbnail)
-	ImageView ivPhotoThumbnail;
-	@InjectView(R.id.photo_author)
-	TextView tvPhotoAuthor;
-	@InjectView(R.id.photo_favorites)
-	TextView tvPhotoFavorites;
-	@InjectView(R.id.info_container)
-	View vInfoContainer;
-	@InjectView(R.id.photo_favorites_container)
-	View vFavoritesContainer;
-
 	private Spring mSpring;
+	/* Views */
+	@InjectView(R.id.photo)
+	private ImageView ivPhoto;
+	@InjectView(R.id.photo_thumbnail)
+	private ImageView ivPhotoThumbnail;
+	@InjectView(R.id.photo_author)
+	private TextView tvPhotoAuthor;
+	@InjectView(R.id.photo_favorites)
+	private TextView tvPhotoFavorites;
+	@InjectView(R.id.info_container)
+	private View vInfoContainer;
+	@InjectView(R.id.photo_favorites_container)
+	private View vFavoritesContainer;
 	private View decorView;
 
 	@Override
@@ -50,7 +50,6 @@ public class DetailsFragment extends BaseFragment {
 		super.onCreate(savedInstanceState);
 		// Setup the Spring by creating a SpringSystem adding a SimpleListener that renders the
 		// animation whenever the spring is updated.
-
 		mSpring = SpringSystem.create().createSpring().setSpringConfig(SPRING_CONFIG).addListener(new SimpleSpringListener() {
 			@Override
 			public void onSpringUpdate(Spring spring) {
@@ -74,7 +73,7 @@ public class DetailsFragment extends BaseFragment {
 	}
 
 	/**
-	 * Fragment Constructor
+	 * Fragment Constructor is empty. Fragment is always present and listen to changes on bus
 	 */
 	public static DetailsFragment newInstance() {
 		return new DetailsFragment();
@@ -85,7 +84,6 @@ public class DetailsFragment extends BaseFragment {
 	 */
 	@OnClick(R.id.photo)
 	public void onClickPhoto() {
-		Log.d(TAG, "[DetailsFragment - onClickPhoto] - (line 86): " + "click: spring is: " + mSpring.getCurrentValue());
 		if (mSpring.getCurrentValue() == 0) {
 			uiHide();
 		} else {
@@ -182,9 +180,8 @@ public class DetailsFragment extends BaseFragment {
 	 * Render spring animations
 	 */
 	private void render() {
-		double value = mSpring.getCurrentValue();
 		// Map the spring to the feedback bar position so that its hidden off screen and bounces in on tap.
-		float position = (float) SpringUtil.mapValueFromRangeToRange(value, 0, 1, 0, vInfoContainer.getHeight());
+		float position = (float) SpringUtil.mapValueFromRangeToRange(mSpring.getCurrentValue(), 0, 1, 0, vInfoContainer.getHeight());
 		vInfoContainer.setTranslationY(position);
 	}
 
