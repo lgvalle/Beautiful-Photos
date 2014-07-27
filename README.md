@@ -5,12 +5,12 @@ Beautiful Photos
 Sample app that 'uses public APIs to fetch data and display it in an organized way'
 
 Third party libraries used:
-  * [Slidinguppanel to display photo details][2]
-  * [Butterknife to inject views][3]
-  * [Otto event bus for layers communication][4]
-  * [Rebound for ui animations][5]
-  * [Appsly Rest client to consume API][6]
-  * [Picasso for image async download][7]
+  * [Slidinguppanel][2] to display photo details
+  * [Butterknife][3] to inject views
+  * [Otto][4] event bus for layers communication
+  * [Rebound][5] for ui animations
+  * [Appsly][6] Rest client to consume API
+  * [Picasso][7] for image async download
 
 ![App Architecture][1]
 
