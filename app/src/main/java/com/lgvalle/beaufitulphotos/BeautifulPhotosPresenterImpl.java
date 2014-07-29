@@ -155,7 +155,6 @@ public class BeautifulPhotosPresenterImpl implements BeautifulPhotosPresenter {
 	 */
 	@Subscribe
 	public void onGalleryRequestingMoreEvent(GalleryRequestingMoreElementsEvent event) {
-		Log.d(TAG, "[BeautifulPhotosPresenterImpl - onGalleryRequestingMoreEvent] - (line 92): " + "");
 		needPhotos();
 	}
 
