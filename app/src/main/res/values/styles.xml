@@ -25,8 +25,10 @@
 	</style>
 
 	<style name="PhotoCaption">
-		<item name="android:textColor">@color/amber_500</item>
-		<item name="android:textSize">20dp</item>
+		<item name="android:textColor">@color/grey_400</item>
+		<item name="android:textSize">16dp</item>
+		<item name="android:shadowColor">@color/grey_900</item>
+		<item name="android:shadowRadius">1</item>
 		<item name="android:gravity">center_vertical</item>
 
 	</style>

@@ -28,15 +28,15 @@ import com.squareup.picasso.Callback;
 public class DetailsFragment extends BaseFragment {
 	private static final String TAG = DetailsFragment.class.getSimpleName();
 	/* Animations */
-	private static final SpringConfig SPRING_CONFIG = SpringConfig.fromOrigamiTensionAndFriction(40, 10);
+	private static final SpringConfig SPRING_CONFIG = SpringConfig.fromOrigamiTensionAndFriction(10, 10);
 	private Spring mSpring;
 	/* Views */
 	@InjectView(R.id.photo)
 	ImageView ivPhoto;
 	@InjectView(R.id.photo_thumbnail)
 	ImageView ivPhotoThumbnail;
-	@InjectView(R.id.photo_author)
-	TextView tvPhotoAuthor;
+	@InjectView(R.id.photo_title)
+	TextView tvPhotoTitle;
 	@InjectView(R.id.photo_favorites)
 	TextView tvPhotoFavorites;
 	@InjectView(R.id.info_container)
@@ -54,7 +54,7 @@ public class DetailsFragment extends BaseFragment {
 			@Override
 			public void onSpringUpdate(Spring spring) {
 				// Just tell the UI to update based on the springs current state.
-				render();
+				animate();
 			}
 		});
 	}
@@ -104,7 +104,7 @@ public class DetailsFragment extends BaseFragment {
 			bindImages(event.getPhoto());
 			bindTexts(event.getPhoto());
 			// Also, set photo title on actionbar
-			setActionBarTitle(event.getPhoto().getTitle());
+			setActionBarTitle(event.getPhoto().getAuthorName());
 		}
 	}
 
@@ -163,7 +163,7 @@ public class DetailsFragment extends BaseFragment {
 
 	private void bindTexts(PhotoModel photoModel) {
 		// Photo Author is always present
-		tvPhotoAuthor.setText(photoModel.getAuthorName());
+		tvPhotoTitle.setText(photoModel.getTitle());
 
 		// Photo Favorites is an extra data, could not be available
 		if (photoModel.getFavorites() == null) {
@@ -177,10 +177,10 @@ public class DetailsFragment extends BaseFragment {
 
 
 	/**
-	 * Render spring animations
+	 * Execute spring animations
 	 */
-	private void render() {
-		// Map the spring to the feedback bar position so that its hidden off screen and bounces in on tap.
+	private void animate() {
+		// Map the spring to info bar position so that its hidden off screen and bounces in on ui restore.
 		float position = (float) SpringUtil.mapValueFromRangeToRange(mSpring.getCurrentValue(), 0, 1, 0, vInfoContainer.getHeight());
 		vInfoContainer.setTranslationY(position);
 	}

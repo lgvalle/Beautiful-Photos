@@ -62,7 +62,7 @@ public abstract class Renderer<T> {
 	/**
 	 * When recycling a renderer, you only need to set a new content.
 	 */
-	private void onRecycle(T content) {
+	protected void onRecycle(T content) {
 		this.content = content;
 	}
 
