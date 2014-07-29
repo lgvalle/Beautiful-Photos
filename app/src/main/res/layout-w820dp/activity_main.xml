@@ -1,24 +1,37 @@
-<com.sothree.slidinguppanel.SlidingUpPanelLayout
-	android:id="@+id/sliding_layout"
+<RelativeLayout
 	xmlns:android="http://schemas.android.com/apk/res/android"
-	xmlns:sothree="http://schemas.android.com/apk/res-auto"
 	android:layout_width="match_parent"
-	android:layout_height="match_parent"
-	android:gravity="bottom"
-	sothree:panelHeight="0dp"
-	sothree:paralaxOffset="100dp"
-	sothree:shadowHeight="10dp">
+	android:layout_height="match_parent">
 
 	<FrameLayout
 		android:id="@+id/main_content"
-		android:layout_width="match_parent"
+		android:layout_width="300dp"
 		android:layout_height="match_parent" />
 
-	<FrameLayout
-		android:id="@+id/frame_details_content"
+	<com.sothree.slidinguppanel.SlidingUpPanelLayout
+		android:id="@+id/sliding_layout"
+		xmlns:sothree="http://schemas.android.com/apk/res-auto"
 		android:layout_width="match_parent"
 		android:layout_height="match_parent"
-		android:gravity="center|bottom">
-	</FrameLayout>
+		android:layout_toRightOf="@id/main_content"
+		android:gravity="bottom"
+		sothree:panelHeight="0dp"
+		sothree:paralaxOffset="100dp"
+		sothree:shadowHeight="10dp">
 
-</com.sothree.slidinguppanel.SlidingUpPanelLayout>
+		<TextView
+			android:layout_width="match_parent"
+			android:layout_height="match_parent"
+			style="@style/EmptyTextMessage"
+			android:text="@string/tablet_empty_content" />
+
+		<FrameLayout
+			android:id="@+id/frame_details_content"
+			android:layout_width="match_parent"
+			android:layout_height="match_parent"
+			android:gravity="center|bottom" />
+
+	</com.sothree.slidinguppanel.SlidingUpPanelLayout>
+
+
+</RelativeLayout>

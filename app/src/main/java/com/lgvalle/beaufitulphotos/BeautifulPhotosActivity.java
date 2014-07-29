@@ -181,9 +181,12 @@ public class BeautifulPhotosActivity extends BaseActivity implements BeautifulPh
 	 * @param panelExpanded True if panel is expanded, false otherwise
 	 */
 	private void toggleUI(boolean panelExpanded) {
-		getSupportActionBar().setDisplayHomeAsUpEnabled(panelExpanded);
+		// Only toggle this elements if not a tablet
+		if (!getResources().getBoolean(R.bool.isTablet)) {
+			getSupportActionBar().setDisplayHomeAsUpEnabled(panelExpanded);
+			menu.findItem(R.id.action_feature_popular).setVisible(!panelExpanded);
+			menu.findItem(R.id.action_feature_highest_rated).setVisible(!panelExpanded);
+		}
 		menu.findItem(R.id.action_share).setVisible(panelExpanded);
-		menu.findItem(R.id.action_feature_popular).setVisible(!panelExpanded);
-		menu.findItem(R.id.action_feature_highest_rated).setVisible(!panelExpanded);
 	}
 }

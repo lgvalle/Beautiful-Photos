@@ -3,8 +3,11 @@
 
 	<string name="app_name">Beautiful Photos</string>
 	<string name="service_error">Error fetching photos. Please try again</string>
+	<string name="share_error">Error loading photo. Please try again</string>
 	<string name="empty_frame_message">Tap a photo to load a large version</string>
 	<string name="feature_popular">Popular</string>
 	<string name="feature_highest_rated">Highest Rated</string>
 	<string name="share">Share</string>
+	<string name="tablet_empty_content">Beautiful Photos, just that</string>
+
 </resources>

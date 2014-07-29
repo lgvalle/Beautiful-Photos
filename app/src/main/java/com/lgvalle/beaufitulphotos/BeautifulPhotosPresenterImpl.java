@@ -193,24 +193,40 @@ public class BeautifulPhotosPresenterImpl implements BeautifulPhotosPresenter {
 			@Override
 			public void onBitmapLoaded(Bitmap bitmap, Picasso.LoadedFrom from) {
 				// Get bitmap uri from filesystem and create intent with it.
-				// TODO: do this in a new separate thread
-				String path = MediaStore.Images.Media.insertImage(ctx.getContentResolver(), bitmap, photo.getTitle(), null);
-				Uri uri = Uri.parse(path);
-				final Intent intent = new Intent(android.content.Intent.ACTION_SEND);
-				intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-				intent.putExtra(Intent.EXTRA_STREAM, uri);
-				intent.setType("image/png");
-				ctx.startActivity(intent);
+				shareBitmap(ctx, bitmap, photo.getTitle());
 			}
 
 			@Override
 			public void onPrepareLoad(Drawable placeHolderDrawable) {
-
+				 /* nothing to do */
 			}
 		});
 
 	}
 
+	/**
+	 * Get bitmap uri from filesystem and create intent with it.
+	 * @param bitmap Image bitmap
+	 * @param title Image title
+	 */
+	private void shareBitmap(Context ctx, Bitmap bitmap, String title) {
+		// TODO: do this in a new separate thread if needed
+		String path = MediaStore.Images.Media.insertImage(ctx.getContentResolver(), bitmap, title, null);
+		if (path == null) {
+			screen.showError(R.string.share_error);
+		} else {
+			Uri uri = Uri.parse(path);
+			final Intent intent = new Intent(android.content.Intent.ACTION_SEND);
+			intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+			intent.putExtra(Intent.EXTRA_STREAM, uri);
+			intent.setType("image/png");
+			ctx.startActivity(intent);
+		}
+	}
+
+	/**
+	 * Decrement page until reach first one
+	 */
 	private void decrementPage() {
 		if (currentPage > service.FIRST_PAGE) {
 			currentPage--;
@@ -218,7 +234,7 @@ public class BeautifulPhotosPresenterImpl implements BeautifulPhotosPresenter {
 	}
 
 	/**
-	 * Increments currentPage number
+	 * Increment currentPage number until reach max pages
 	 */
 	private void incrementPage() {
 		if (currentPage < totalPages) {
