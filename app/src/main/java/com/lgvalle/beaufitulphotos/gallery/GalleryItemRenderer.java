@@ -40,8 +40,8 @@ public class GalleryItemRenderer extends Renderer<PhotoModel> {
 		super();
 	}
 
-	private GalleryItemRenderer(PhotoModel quest, LayoutInflater inflater, ViewGroup parent) {
-		super(quest);
+	private GalleryItemRenderer(PhotoModel content, LayoutInflater inflater, ViewGroup parent) {
+		super(content);
 		this.rootView = inflater.inflate(R.layout.row_photo, parent, false);
 		this.rootView.setTag(this);
 		ButterKnife.inject(this, rootView);
