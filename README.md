@@ -26,6 +26,9 @@ Third party libraries used in this project
 Simple diagram describing layers and main actors
 ![App Architecture][1]
 
+#### Download 
+[Direct Download APK][9]
+
 
 [1]: http://raw.github.com/lgvalle/Beautiful-Photos/master/screenshots/app_diagram.png
 [2]: https://github.com/umano/AndroidSlidingUpPanel
@@ -35,5 +38,6 @@ Simple diagram describing layers and main actors
 [6]: https://github.com/47deg/appsly-android-rest
 [7]: https://github.com/square/picasso
 [8]: http://en.wikipedia.org/wiki/Model%E2%80%93view%E2%80%93presenter
+[9]: http://goo.gl/EEwZYE
 
 
